@@ -51,7 +51,7 @@ defineProps<{
   height: calc(100vh - 1.8rem);
 }
 
-@media (max-width: 1560px) {
+@media (max-width: 1439px) {
   .panel-wrap {
     position: fixed;
     top: 0;

@@ -121,7 +121,7 @@ html.dark {
   --color-line: rgb(66, 66, 66);
 }
 
-@media (max-width: 1720px) {
+@media (max-width: 1706px) {
   :root {
     --toolbar-width: 50vw;
     --panel-width: 20rem;
@@ -133,9 +133,9 @@ html.dark {
   }
 }
 
-@media (max-width: 1560px) {
+@media (max-width: 1439px) {
   :root {
-    --panel-width: 24rem;
+    --panel-width: 25rem;
     --toolbar-width: 60vw;
     --article-width: 60vw;
     --article-toolbar-width: 60vw;
@@ -148,8 +148,6 @@ html.dark {
     --toolbar-width: 70vw;
     --stat-gap: 0.5rem;
     --space: 0.3rem;
-
-
     --article-width: 70vw;
     --article-toolbar-width: 70vw;
   }

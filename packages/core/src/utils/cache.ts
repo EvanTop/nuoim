@@ -89,7 +89,10 @@ async function getLocalWithMeta<T>(config: CacheConfig): Promise<LocalCacheResul
 
 async function getLocal<T>(config: CacheConfig): Promise<T | null> {
   const result = await getLocalWithMeta<T>(config)
-  return result?.val ?? null
+  if (result?.val) {
+    if (Object.keys(result.val).length > 0) return result.val
+  }
+  return null
 }
 
 async function setLocal<T>(config: CacheConfig, val: T | null, updated_at: string): Promise<void> {
@@ -110,7 +113,10 @@ export async function getPracticeWordCacheLocalWithMeta(): Promise<LocalCacheRes
   return getLocalWithMeta<PracticeWordCacheStored>(PRACTICE_WORD_CACHE)
 }
 
-export async function setPracticeWordCacheLocal(cache: PracticeWordCacheStored | null, updated_at?: string): Promise<void> {
+export async function setPracticeWordCacheLocal(
+  cache: PracticeWordCacheStored | null,
+  updated_at?: string
+): Promise<void> {
   await setLocal(PRACTICE_WORD_CACHE, cache, updated_at)
 }
 
@@ -122,6 +128,9 @@ export async function getPracticeArticleCacheLocalWithMeta(): Promise<LocalCache
   return getLocalWithMeta<PracticeArticleCache>(PRACTICE_ARTICLE_CACHE)
 }
 
-export async function setPracticeArticleCacheLocal(cache: PracticeArticleCache | null, updated_at?: string): Promise<void> {
+export async function setPracticeArticleCacheLocal(
+  cache: PracticeArticleCache | null,
+  updated_at?: string
+): Promise<void> {
   await setLocal(PRACTICE_ARTICLE_CACHE, cache, updated_at)
 }

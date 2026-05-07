@@ -64,12 +64,12 @@ async function startPractice() {
   if (cache) {
     let currentArticle = store.sbook.articles[store.sbook.lastLearnIndex]
     let data: Partial<Statistics> & { title: string; articleId: number } = {
-      articleId: Number(currentArticle.id),
-      title: currentArticle.title,
-      spend: cache.statStoreData.spend,
-      startDate: cache.statStoreData.startDate,
-      total: cache.statStoreData.total,
-      wrong: cache.statStoreData.wrong,
+      articleId: Number(currentArticle?.id),
+      title: currentArticle?.title,
+      spend: cache?.statStoreData?.spend,
+      startDate: cache?.statStoreData?.startDate,
+      total: cache?.statStoreData?.total,
+      wrong: cache?.statStoreData?.wrong,
     }
     store.sbook.statistics.push(data as any)
     await practice.clear()
