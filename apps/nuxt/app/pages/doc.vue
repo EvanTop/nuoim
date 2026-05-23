@@ -107,85 +107,85 @@ const categories = ref<Category[]>([
       },
     ],
   },
-  {
-    id: 'exam',
-    name: '电视/电影',
-    description: '一些不错的美/英剧，可练听力和口语',
-    resources: [
-      {
-        name: '电视/电影资源合集',
-        difficulty: '包含后面所有的内容',
-        link: 'https://pan.quark.cn/s/544c77960c3d', //187
-        // link: 'https://pan.quark.cn/s/84ecb30b700b', //159
-        // link: 'https://pan.quark.cn/s/e9b62b79c48c',
-      },
-      {
-        type: 'list',
-        children: [
-          {
-            name: '老友记',
-            description: '',
-            difficulty: '喜剧/爱情',
-          },
-          {
-            name: '生活大爆炸',
-            description: '',
-            difficulty: '喜剧/爱情',
-          },
-          {
-            name: '是大臣/是首相',
-            description: '',
-            difficulty: '喜剧/讽刺',
-          },
-          {
-            name: '破产姐妹',
-            description: '',
-            difficulty: '喜剧',
-          },
-          {
-            name: '绝望主妇',
-            description: '',
-            difficulty: '悬疑',
-          },
-          {
-            name: '纸牌屋',
-            description: '',
-            difficulty: '纸牌屋',
-          },
-        ],
-      },
-      {
-        type: 'list',
-        children: [
-          {
-            name: '实习医生格蕾',
-            description: '',
-            difficulty: '电视剧',
-          },
-          {
-            name: '唐顿庄园',
-            description: '',
-            difficulty: '电视剧',
-          },
-          {
-            name: '破产姐妹',
-            description: '',
-            difficulty: '喜剧',
-          },
-          {
-            name: '王冠',
-            description: '',
-            difficulty: '悬疑',
-          },
-          {
-            name: '经典英文电影大片',
-            description: '',
-            difficulty: '电影',
-          },
-        ],
-      },
-    ],
-  },
+  // {
+  //   id: 'exam',
+  //   name: '电视/电影',
+  //   description: '一些不错的美/英剧，可练听力和口语',
+  //   resources: [
+  //     {
+  //       name: '电视/电影资源合集',
+  //       difficulty: '包含后面所有的内容',
+  //       link: 'https://pan.quark.cn/s/544c77960c3d', //187
+  //       // link: 'https://pan.quark.cn/s/84ecb30b700b', //159
+  //       // link: 'https://pan.quark.cn/s/e9b62b79c48c',
+  //     },
+  //     {
+  //       type: 'list',
+  //       children: [
+  //         {
+  //           name: '老友记',
+  //           description: '',
+  //           difficulty: '喜剧/爱情',
+  //         },
+  //         {
+  //           name: '生活大爆炸',
+  //           description: '',
+  //           difficulty: '喜剧/爱情',
+  //         },
+  //         {
+  //           name: '是大臣/是首相',
+  //           description: '',
+  //           difficulty: '喜剧/讽刺',
+  //         },
+  //         {
+  //           name: '破产姐妹',
+  //           description: '',
+  //           difficulty: '喜剧',
+  //         },
+  //         {
+  //           name: '绝望主妇',
+  //           description: '',
+  //           difficulty: '悬疑',
+  //         },
+  //         {
+  //           name: '纸牌屋',
+  //           description: '',
+  //           difficulty: '纸牌屋',
+  //         },
+  //       ],
+  //     },
+  //     {
+  //       type: 'list',
+  //       children: [
+  //         {
+  //           name: '实习医生格蕾',
+  //           description: '',
+  //           difficulty: '电视剧',
+  //         },
+  //         {
+  //           name: '唐顿庄园',
+  //           description: '',
+  //           difficulty: '电视剧',
+  //         },
+  //         {
+  //           name: '破产姐妹',
+  //           description: '',
+  //           difficulty: '喜剧',
+  //         },
+  //         {
+  //           name: '王冠',
+  //           description: '',
+  //           difficulty: '悬疑',
+  //         },
+  //         {
+  //           name: '经典英文电影大片',
+  //           description: '',
+  //           difficulty: '电影',
+  //         },
+  //       ],
+  //     },
+  //   ],
+  // },
   {
     id: 'grammar',
     name: '语法学习',

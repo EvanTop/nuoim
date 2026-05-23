@@ -348,10 +348,11 @@ export async function _getDictDataByUrl(val: DictResource, type: DictType = Dict
   }
   let s = await fetch(resourceWrap(dictResourceUrl, val.version)).then(r => r.json())
   if (s) {
-    if (type === DictType.word) {
-      return getDefaultDict({ ...val, words: s })
-    } else {
+    //单词词典有两种类型，用article来判断
+    if (type === DictType.article) {
       return getDefaultDict({ ...val, articles: s })
+    } else {
+      return getDefaultDict({ ...val, words: s })
     }
   }
   return getDefaultDict()

@@ -70,7 +70,7 @@ export function getDefaultDict(val: Partial<Dict> = {}): Dict {
     complete: false,
 
     createdBy: '',
-    en_name: '',
+    enName: '',
     category_id: null,
     is_default: false,
     update: false,
