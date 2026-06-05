@@ -65,7 +65,7 @@ const searchList = computed<any[]>(() => {
     let s = searchKey.toLowerCase()
     return dict_list.value.filter(item => {
       return (
-        item.id.toLowerCase().includes(s) ||
+        item.enName.toLowerCase().includes(s) ||
         item.name.toLowerCase().includes(s) ||
         item.category.toLowerCase().includes(s) ||
         item.tags.join('').replace('所有', '').toLowerCase().includes(s) ||
