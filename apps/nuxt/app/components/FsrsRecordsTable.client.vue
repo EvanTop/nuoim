@@ -39,6 +39,16 @@ if (instance) {
 function formatDate(v: string | Date | null | undefined) {
   return v ? dayjs(v).format('YYYY-MM-DD HH:mm') : '-'
 }
+
+function getStateName(state: number | undefined): string {
+  const stateMap: Record<number, string> = {
+    0: '新词',
+    1: '学习中',
+    2: '复习中',
+    3: '重新学',
+  }
+  return stateMap[state ?? -1] ?? '未知'
+}
 </script>
 
 <template>
@@ -60,6 +70,7 @@ function formatDate(v: string | Date | null | undefined) {
         },
       }"
     >
+      <vxe-column type="seq" width="60" title="序号" fixed="left" />
       <vxe-column field="word" title="单词" min-width="120" fixed="left" sortable />
       <vxe-column field="last_review" title="最近复习日期" min-width="160" sortable>
         <template #default="{ row }">
@@ -71,9 +82,9 @@ function formatDate(v: string | Date | null | undefined) {
           {{ formatDate(row.due as string | Date | null | undefined) }}
         </template>
       </vxe-column>
-      <vxe-column field="state" title="状态" min-width="100">
+      <vxe-column field="state" title="状态" min-width="100" sortable>
         <template #default="{ row }">
-          {{ State[row.state as number] }}
+          {{ getStateName(row.state) }}
         </template>
       </vxe-column>
       <vxe-column field="stability" title="记忆稳定性" min-width="100" sortable />
@@ -87,5 +98,4 @@ function formatDate(v: string | Date | null | undefined) {
   </div>
 </template>
 
-<style scoped lang="scss">
-</style>
+<style scoped lang="scss"></style>

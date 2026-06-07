@@ -264,7 +264,7 @@ async function applyRemoteDataByType(
 
 function getDictSyncBlockReason(state: BaseState): string | null {
   const data = shakeCommonDict(state)
-  const bookList = data.article.bookList.filter(v => v.custom || [DictId.articleCollect].includes(v.id))
+  const bookList = data.article.bookList.filter(v => v.custom || [DictId.articleCollect].includes(v.enName))
   const audioFileIdList: string[] = []
   bookList.forEach(v => {
     v.articles
@@ -531,7 +531,7 @@ export function useDataSyncPersistence() {
     const blockReason = getDictSyncBlockReason(state)
     const audioFileIdList: string[] = []
     if (blockReason) {
-      const bookList = data.article.bookList.filter(v => v.custom || [DictId.articleCollect].includes(v.id))
+      const bookList = data.article.bookList.filter(v => v.custom || [DictId.articleCollect].includes(v.enName))
       bookList.forEach(v => {
         v.articles
           .filter(s => !s.audioSrc && s.audioFileId)
@@ -577,8 +577,8 @@ export function useDataSyncPersistence() {
     let d1 = getDefaultSettingState()
     d1.load = true
     let data: any = {
-      setting: { val: d },
-      dict: { val: d1 },
+      dict: { val: d },
+      setting: { val: d1 },
       [PRACTICE_WORD_CACHE.key]: null,
       [PRACTICE_ARTICLE_CACHE.key]: null,
       // @deprecated 大版本5废弃

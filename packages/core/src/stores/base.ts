@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { Dict, getDefaultDict, SaveData, Word } from '../types'
-import { _getStudyProgress, checkAndUpgradeSaveDict, parseJsonStr } from '../utils'
+import { _getStudyProgress, checkAndUpgradeSaveDict, isSameDictResource, parseJsonStr } from '../utils'
 import { shallowReactive } from 'vue'
 import { get } from 'idb-keyval'
 import { AppEnv, DictId, IS_DEV, SAVE_DICT_KEY } from '../config/env'
@@ -72,11 +72,11 @@ export const getDefaultBaseState = (): BaseState => ({
   load: false,
   word: {
     bookList: [
-      getDefaultDict({ id: DictId.wordCollect, en_name: DictId.wordCollect, name: '收藏' }),
-      getDefaultDict({ id: DictId.wordWrong, en_name: DictId.wordCollect, name: '错词' }),
+      getDefaultDict({ id: DictId.wordCollect, enName: DictId.wordCollect, name: '收藏' }),
+      getDefaultDict({ id: DictId.wordWrong, enName: DictId.wordCollect, name: '错词' }),
       getDefaultDict({
         id: DictId.wordKnown,
-        en_name: DictId.wordCollect,
+        enName: DictId.wordCollect,
         name: '已掌握',
         description: '已掌握后的单词不会出现在练习中',
       }),
@@ -84,7 +84,7 @@ export const getDefaultBaseState = (): BaseState => ({
     studyIndex: -1,
   },
   article: {
-    bookList: [getDefaultDict({ id: DictId.articleCollect, en_name: DictId.articleCollect, name: '收藏' })],
+    bookList: [getDefaultDict({ id: DictId.articleCollect, enName: DictId.articleCollect, name: '收藏' })],
     studyIndex: -1,
   },
   dictListVersion: 1,
@@ -229,9 +229,16 @@ export const useBaseStore = defineStore('base', {
           v.words = shallowReactive([])
         }
       })
-      let rIndex = this.word.bookList.findIndex((v: Dict) => [val.enName, val.id].includes(v.id))
-      if (val.words.length < val.perDayStudyNumber) {
-        val.perDayStudyNumber = val.words.length
+      if (val.words?.length) {
+        val.length = val.words.length
+      }
+      let rIndex = this.word.bookList.findIndex((v: Dict) => isSameDictResource(v, val))
+      if (val.perDayStudyNumber > val.length) {
+        val.perDayStudyNumber = val.length
+      }
+      if (val.lastLearnIndex > val.length) {
+        val.lastLearnIndex = val.length
+        val.complete = true
       }
       if (rIndex > -1) {
         this.word.studyIndex = rIndex
@@ -267,7 +274,14 @@ export const useBaseStore = defineStore('base', {
           v.articles = shallowReactive([])
         }
       })
-      let rIndex = this.article.bookList.findIndex((v: Dict) => [val.enName, val.id].includes(v.id))
+      if (val.articles?.length) {
+        val.length = val.articles.length
+      }
+      if (val.lastLearnIndex > val.length) {
+        val.lastLearnIndex = val.length
+        val.complete = true
+      }
+      let rIndex = this.article.bookList.findIndex((v: Dict) => isSameDictResource(v, val))
       if (rIndex > -1) {
         this.article.studyIndex = rIndex
         //不要整个等于，不然统计没了

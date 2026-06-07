@@ -47,6 +47,23 @@ function checkRiskKey(origin: object, target: object) {
   return origin
 }
 
+function normalizeStoredDict(val: any): Dict {
+  const next = { ...(val ?? {}) }
+  if (!next.enName && next.en_name) {
+    next.enName = next.en_name
+  }
+  if (!next.enName && !next.en_name) {
+    next.enName = String(next.id)
+  }
+  if (Array.isArray(next.words) && next.words.length) {
+    next.length = next.words.length
+  }
+  if (Array.isArray(next.articles) && next.articles.length) {
+    next.length = next.articles.length
+  }
+  return getDefaultDict(checkRiskKey(getDefaultDict(), next))
+}
+
 export async function checkAndUpgradeSaveDict(val: any) {
   // console.log(configStr)
   // console.log('s', new Blob([val]).size)
@@ -80,12 +97,8 @@ export async function checkAndUpgradeSaveDict(val: any) {
       // console.log('state', state)
       if (version === SAVE_DICT_KEY.version) {
         checkRiskKey(defaultState, state)
-        defaultState.article.bookList = defaultState.article.bookList.map(v => {
-          return getDefaultDict(checkRiskKey(getDefaultDict(), v))
-        })
-        defaultState.word.bookList = defaultState.word.bookList.map(v => {
-          return getDefaultDict(checkRiskKey(getDefaultDict(), v))
-        })
+        defaultState.article.bookList = defaultState.article.bookList.map(v => normalizeStoredDict(v))
+        defaultState.word.bookList = defaultState.word.bookList.map(v => normalizeStoredDict(v))
         return defaultState
       } else {
         // 版本不匹配时，尽量保留数据而不是直接返回默认状态
@@ -94,14 +107,10 @@ export async function checkAndUpgradeSaveDict(val: any) {
           checkRiskKey(defaultState, state)
           // 尝试保留 bookList 数据
           if (state.word && state.word.bookList && Array.isArray(state.word.bookList)) {
-            defaultState.word.bookList = state.word.bookList.map((v: any) => {
-              return getDefaultDict(checkRiskKey(getDefaultDict(), v))
-            })
+            defaultState.word.bookList = state.word.bookList.map((v: any) => normalizeStoredDict(v))
           }
           if (state.article && state.article.bookList && Array.isArray(state.article.bookList)) {
-            defaultState.article.bookList = state.article.bookList.map((v: any) => {
-              return getDefaultDict(checkRiskKey(getDefaultDict(), v))
-            })
+            defaultState.article.bookList = state.article.bookList.map((v: any) => normalizeStoredDict(v))
           }
           return defaultState
         } catch (upgradeError) {
@@ -224,10 +233,10 @@ export async function checkAndUpgradeSaveSetting(val: any) {
 export function shakeCommonDict(n: BaseState): BaseState {
   let data: BaseState = cloneDeep(n)
   data.word.bookList.map((v: Dict) => {
-    if (!v.custom && ![DictId.wordKnown, DictId.wordWrong, DictId.wordCollect].includes(v.id)) v.words = []
+    if (!v.custom && ![DictId.wordKnown, DictId.wordWrong, DictId.wordCollect].includes(v.enName)) v.words = []
   })
   data.article.bookList.map((v: Dict) => {
-    if (!v.custom && ![DictId.articleCollect].includes(v.id)) v.articles = []
+    if (!v.custom && ![DictId.articleCollect].includes(v.enName)) v.articles = []
     else {
       v.articles.map(a => {
         //运行时再生成
@@ -593,6 +602,33 @@ export function resourceWrap(resource: string, version?: number) {
     return `${resource}_v${version}.json`
   }
   return withAppBaseURL(resource)
+}
+
+type DictIdentity = {
+  id?: unknown
+  enName?: unknown
+  en_name?: unknown
+}
+
+export function normalizeDictId(id: unknown): string {
+  return id === null || id === undefined ? '' : String(id)
+}
+
+export function getDictIdentityList(dict?: DictIdentity | null): string[] {
+  if (!dict) return []
+  return Array.from(new Set([dict.id, dict.enName, dict.en_name].map(normalizeDictId).filter(Boolean)))
+}
+
+export function isDictIdMatch(dict: DictIdentity | null | undefined, id: unknown): boolean {
+  const target = normalizeDictId(id)
+  return !!target && getDictIdentityList(dict).includes(target)
+}
+
+export function isSameDictResource(a?: DictIdentity | null, b?: DictIdentity | null): boolean {
+  const aIds = getDictIdentityList(a)
+  if (!aIds.length) return false
+  const bIds = new Set(getDictIdentityList(b))
+  return aIds.some(id => bIds.has(id))
 }
 
 // check if it is a new user

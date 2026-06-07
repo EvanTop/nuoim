@@ -19,7 +19,8 @@ type DayGroup = { firstStart: number; totalSpend: number; daySegments: [number, 
  * @param st - 来自缓存或内存的 PracticeState，为 null / spend=0 时直接返回
  */
 export function flushStatToStore(st: PracticeState | null | undefined): void {
-  if (!st?.spend) return
+  const hasSegmentSpend = Array.isArray(st?.segments) && st.segments.some(([start, end]) => Number(end) > Number(start))
+  if (!st || (!st.spend && !hasSegmentSpend)) return
   const store = useBaseStore()
 
   const baseInfo = {
@@ -40,7 +41,7 @@ export function flushStatToStore(st: PracticeState | null | undefined): void {
       group.totalSpend += segEnd - segStart
       group.daySegments.push([segStart, segEnd])
     }
-    const dayKeys = [...dayMap.keys()]
+    const dayKeys = Array.from(dayMap.keys())
     if (dayKeys.length === 1) {
       store.sdict.statistics.push({
         ...baseInfo,

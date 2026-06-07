@@ -114,6 +114,7 @@ export interface Statistics {
 
 export type DictResource = {
   id: string | number
+  enName?: string
   name: string
   description: string
   url: string
