@@ -631,7 +631,7 @@
 	"tts_voice": "TTS Voice",
 	"tts_voice_preview_sentence": "Preview sentence: ",
 	"tts_voice_setting_title": "TTS Voice",
-	"tts_voice_setting_desc": "Example sentences use browser built-in TTS. If no sound, select an available voice and click the speaker to preview. Different browsers/devices support different voices. This setting only applies to the current browser.",
+	"tts_voice_setting_desc": "Example sentence audio uses the browser's built-in TTS. If there is no sound, please select a voice from the dropdown list. Available voices vary by browser and device. If none of the voices produce sound, please try a different browser. We recommend using Edge.",
 	"tts_select_placeholder": "Select voice",
 	"tts_no_voice_available": "No voices available in browser",
 	"tts_local_voice": "Local",
@@ -772,5 +772,7 @@
 	"demo_word_diligent_ex2": "He was diligent in his research and rarely took breaks.",
 	"demo_word_profound_trans": "adj. profound, deeply meaningful",
 	"demo_word_profound_ex1": "Reading widely has a profound effect on vocabulary.",
-	"demo_word_profound_ex2": "The discovery had a profound impact on modern science."
+	"demo_word_profound_ex2": "The discovery had a profound impact on modern science.",
+	"create_copy": "Create Copy",
+	"create_copy_to_edit": "Official resources are read-only. Please create a copy first."
 }

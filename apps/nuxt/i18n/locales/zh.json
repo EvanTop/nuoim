@@ -631,7 +631,7 @@
 	"tts_voice": "TTS 声色",
 	"tts_voice_preview_sentence": "试听句子：",
 	"tts_voice_setting_title": "TTS 声色",
-	"tts_voice_setting_desc": "例句使用浏览器内置 TTS 发音。若例句无声，请在此选择一个可用声色并点击右侧喇叭试听，选到有声音的即可。不同浏览器/设备支持的声色不同，此设置仅对当前浏览器生效。",
+	"tts_voice_setting_desc": "例句发音使用浏览器内置 TTS 发音。若例句没有声音，请在下拉框内指定声色，不同浏览器/设备支持声色不同，如果所有声色都没有声音，请更换浏览器，建议使用 Edge 浏览器",
 	"tts_select_placeholder": "请选择声色",
 	"tts_no_voice_available": "浏览器暂无可用声色",
 	"tts_local_voice": "本地",
@@ -772,5 +772,7 @@
 	"demo_word_diligent_ex2": "他研究工作勤勤恳恳，很少休息。",
 	"demo_word_profound_trans": "adj. 深刻的，意义深远的",
 	"demo_word_profound_ex1": "广泛阅读对词汇量有深远的影响。",
-	"demo_word_profound_ex2": "这一发现对现代科学产生了深远的影响。"
+	"demo_word_profound_ex2": "这一发现对现代科学产生了深远的影响。",
+	"create_copy": "创建副本",
+	"create_copy_to_edit": "官方资源不可编辑，请先创建副本"
 }

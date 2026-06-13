@@ -631,7 +631,7 @@
 	"tts_voice": "TTS 声色",
 	"tts_voice_preview_sentence": "试听句子：",
 	"tts_voice_setting_title": "TTS 声色",
-	"tts_voice_setting_desc": "例句使用瀏覽器內建 TTS 发音。若例句无声，请在此選擇一個可用声色并点击右侧喇叭试听，选到有声音的即可。不同瀏覽器/裝置支援的声色不同，此設定仅對當前瀏覽器生效。",
+	"tts_voice_setting_desc": "例句發音使用瀏覽器內建的 TTS 功能。若例句沒有聲音，請在下拉選單中指定語音。不同瀏覽器／裝置支援的語音有所不同，若所有語音都沒有聲音，請更換瀏覽器，建議使用 Edge 瀏覽器。",
 	"tts_select_placeholder": "请選擇声色",
 	"tts_no_voice_available": "瀏覽器暂无可用声色",
 	"tts_local_voice": "本機",

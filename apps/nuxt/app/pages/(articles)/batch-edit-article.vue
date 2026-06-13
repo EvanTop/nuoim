@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Article } from '@typewords/core/types/types.ts'
-import { BaseButton, Toast, MiniDialog, UploadButton ,BackIcon} from '@typewords/base'
+import { BaseButton, Toast, MiniDialog, BackIcon } from '@typewords/base'
 import { cloneDeep, ensureCustomDictCopy, loadJsLib } from '@typewords/core/utils'
 
 import List from '@typewords/core/components/list/List.vue'
@@ -98,7 +98,24 @@ async function handleBack() {
   let r = await checkDataChange()
   if (!r) return
 
+  syncBookInMyStudyList()
+
   const targetId = String(runtimeStore.editDict.id || route.query.targetId || '')
+  const countBefore = Number(sessionStorage.getItem(`import-articles-count-${targetId}`) || 0)
+  const successCount = Math.max(0, runtimeStore.editDict.articles.length - countBefore)
+
+  if (runtimeStore.editDict.articles.length) {
+    sessionStorage.setItem(
+      `import-result-${targetId}`,
+      JSON.stringify({
+        successCount: successCount || runtimeStore.editDict.articles.length,
+        skippedCount: 0,
+        failedItems: [],
+        type: 'article',
+      })
+    )
+  }
+
   router.replace({
     path: '/import',
     query: {
@@ -160,80 +177,16 @@ onMounted(() => {
 })
 
 let exportLoading = $ref(false)
-let importLoading = $ref(false)
 
-function importData(e: any) {
-  let file = e.target.files[0]
-  if (!file) return
-  // no()
-  let reader = new FileReader()
-  reader.onload = async function (s) {
-    importLoading = true
-    const XLSX = await loadJsLib('XLSX', LIB_JS_URL.XLSX)
-    let data = s.target.result
-    let workbook = XLSX.read(data, { type: 'binary' })
-    let res: any[] = XLSX.utils.sheet_to_json(workbook.Sheets['Sheet1'])
-    if (res.length) {
-      let articles = res
-        .map(v => {
-          if (v['原文标题'] && v['原文正文']) {
-            return getDefaultArticle({
-              id: nanoid(6),
-              title: String(v['原文标题']),
-              titleTranslate: String(v['译文标题']),
-              text: String(v['原文正文']),
-              textTranslate: String(v['译文正文']),
-              audioSrc: String(v['音频地址']),
-            })
-          }
-        })
-        .filter(v => v)
-
-      let repeat = []
-      let noRepeat = []
-      articles.map((v: any) => {
-        let rIndex = runtimeStore.editDict.articles.findIndex(s => s.title === v.title)
-        if (rIndex > -1) {
-          v.index = rIndex
-          repeat.push(v)
-        } else {
-          noRepeat.push(v)
-        }
-      })
-
-      runtimeStore.editDict.articles = runtimeStore.editDict.articles.concat(noRepeat)
-
-      if (repeat.length) {
-        MessageBox.confirm(
-          '文章"' + repeat.map(v => v.title).join(', ') + '" 已存在，是否覆盖原有文章？',
-          '检测到重复文章',
-          () => {
-            repeat.map(v => {
-              runtimeStore.editDict.articles[v.index] = v
-              delete runtimeStore.editDict.articles[v.index]['index']
-            })
-            setTimeout(listEl?.scrollToBottom, 100)
-          },
-          null,
-          () => {
-            e.target.value = ''
-            importLoading = false
-            syncBookInMyStudyList()
-            Toast.success('导入成功！')
-          },
-          {t}
-        )
-      } else {
-        syncBookInMyStudyList()
-        Toast.success('导入成功！')
-      }
-    } else {
-      Toast.success('导入失败！原因：没有数据')
-    }
-    e.target.value = ''
-    importLoading = false
-  }
-  reader.readAsBinaryString(file)
+function goImportPage() {
+  router.push({
+    path: '/import',
+    query: {
+      type: 'article',
+      targetId: String(runtimeStore.editDict.id),
+      step: '2',
+    },
+  })
 }
 
 async function exportData(val: { type: string; data?: Article }) {
@@ -303,13 +256,7 @@ function updateList(e) {
       </List>
       <div class="add" v-if="!article.title">正在添加新文章...</div>
       <div class="footer">
-        <UploadButton
-          @change="importData"
-          :loading="importLoading"
-          accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
-        >
-          导入
-        </UploadButton>
+        <BaseButton @click="goImportPage">导入</BaseButton>
         <div class="export" style="position: relative" @click.stop="null">
           <BaseButton @click="showExport = true">导出</BaseButton>
           <MiniDialog v-model="showExport" style="width: 8rem; bottom: calc(100% + 1rem); top: unset">

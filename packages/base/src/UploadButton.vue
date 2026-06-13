@@ -29,7 +29,7 @@ const onChange = e => {
 </script>
 <template>
   <div class="base-button inline-block relative">
-    <BaseButton v-bind="buttonBind"><slot></slot></BaseButton>
+    <BaseButton v-bind="buttonBind" size="large"><slot></slot></BaseButton>
     <input
       v-if="!buttonBind.disabled"
       type="file"

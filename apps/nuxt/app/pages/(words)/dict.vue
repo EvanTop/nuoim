@@ -1,5 +1,4 @@
 <script setup lang="tsx">
-import { detail } from '@typewords/core/apis'
 import {
   BackIcon,
   BaseButton,
@@ -13,17 +12,22 @@ import {
   Textarea,
   Toast,
 } from '@typewords/base'
-import BaseTable from '@typewords/core/components/BaseTable.vue'
-import WordItem from '@typewords/core/components/word/WordItem.vue'
-import { AppEnv, DICT_LIST, DictId, LIB_JS_URL, TourConfig } from '@typewords/core/config/env.ts'
-import { getCurrentStudyWord } from '@typewords/core/hooks/dict.ts'
+import { detail } from '@typewords/core/apis'
+import { copyOfficialDict } from '@typewords/core/apis/dict.ts'
+import { wordDelete } from '@typewords/core/apis/words.ts'
 import EditBook from '@typewords/core/components/article/EditBook.vue'
+import BaseTable from '@typewords/core/components/BaseTable.vue'
 import PracticeSettingDialog from '@typewords/core/components/word/PracticeSettingDialog.vue'
+import WordItem from '@typewords/core/components/word/WordItem.vue'
+import { flushStatToStore, usePracticeWordPersistence } from '@typewords/core/composables/usePracticePersistence'
+import { AppEnv, DICT_LIST, LIB_JS_URL, TourConfig } from '@typewords/core/config/env.ts'
+import { getCurrentStudyWord } from '@typewords/core/hooks/dict.ts'
 import { useBaseStore } from '@typewords/core/stores/base.ts'
 import { useRuntimeStore } from '@typewords/core/stores/runtime.ts'
 import { useSettingStore } from '@typewords/core/stores/setting.ts'
-import type { Dict } from '@typewords/core/types/types.ts'
+import { Sort, WordPracticeMode } from '@typewords/core/types/enum.ts'
 import { getDefaultDict, getDefaultWord } from '@typewords/core/types/func.ts'
+import type { Dict } from '@typewords/core/types/types.ts'
 import {
   _getDictDataByUrl,
   _nextTick,
@@ -36,16 +40,12 @@ import {
   shuffle,
   useNav,
 } from '@typewords/core/utils'
+import { getPracticeWordCacheLocal } from '@typewords/core/utils/cache.ts'
 import { MessageBox } from '@typewords/core/utils/MessageBox.tsx'
-import { computed, onMounted, reactive, ref, watch } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import { useI18n } from 'vue-i18n'
-import { wordDelete } from '@typewords/core/apis/words.ts'
-import { copyOfficialDict } from '@typewords/core/apis/dict.ts'
-import { getPracticeWordCacheLocal, PRACTICE_WORD_CACHE } from '@typewords/core/utils/cache.ts'
-import { flushStatToStore, usePracticeWordPersistence } from '@typewords/core/composables/usePracticePersistence'
-import { Sort, WordPracticeMode } from '@typewords/core/types/enum.ts'
 import saveAs from 'file-saver'
+import { computed, onMounted, reactive, ref, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
+import { useRoute, useRouter } from 'vue-router'
 
 const runtimeStore = useRuntimeStore()
 const wordPersistence = usePracticeWordPersistence()
@@ -260,11 +260,7 @@ onMounted(async () => {
     if (!runtimeStore.editDict.id) {
       return router.push('/words')
     } else {
-      if (
-        !runtimeStore.editDict.words.length &&
-        !runtimeStore.editDict.custom &&
-        !runtimeStore.editDict.system
-      ) {
+      if (!runtimeStore.editDict.words.length && !runtimeStore.editDict.custom && !runtimeStore.editDict.system) {
         loading = true
         let dictList = await fetch(resourceWrap(DICT_LIST.WORD.ALL)).then(r => r.json())
         let dict = await _getDictDataByUrl(runtimeStore.editDict)
@@ -308,9 +304,9 @@ async function getDetail(id) {
 function formClose() {
   if (isEdit) {
     isEdit = false
-    } else if (isAdd) {
-      _copyData = null
-      isAdd = false
+  } else if (isAdd) {
+    _copyData = null
+    isAdd = false
   } else {
     router.back()
   }
@@ -375,178 +371,14 @@ async function startTest() {
 let exportXlsxLoading = $ref(false)
 let exportJsonLoading = $ref(false)
 
-let importLoading = $ref(false)
 let tableRef = ref()
 
-function importXlsxData(e) {
-  if (!importLoading) {
-    let file = e.target.files[0]
-    if (!file) return
-
-    let reader = new FileReader()
-    reader.onload = async function (s) {
-      let data = s.target.result
-      importLoading = true
-      const XLSX = await loadJsLib('XLSX', LIB_JS_URL.XLSX)
-      let workbook = XLSX.read(data, { type: 'binary' })
-      let res: any[] = XLSX.utils.sheet_to_json(workbook.Sheets['Sheet1'])
-      if (res.length) {
-        let words = res
-          .map(v => {
-            if (v['单词']) {
-              let data = null
-              try {
-                data = convertToWord({
-                  id: nanoid(6),
-                  word: v['单词'],
-                  phonetic0: v['音标①'] ?? '',
-                  phonetic1: v['音标②'] ?? '',
-                  trans: v['翻译'] ?? '',
-                  sentences: v['例句'] ?? '',
-                  phrases: v['短语'] ?? '',
-                  synos: v['近义词'] ?? '',
-                  relWords: v['同根词'] ?? '',
-                  etymology: v['词源'] ?? '',
-                })
-                // 笔记集中存储
-                const noteVal = (v['笔记'] ?? '').trim()
-                if (noteVal) {
-                  base.noteData[v['单词']] = noteVal
-                }
-              } catch (e) {
-                console.error('导入单词报错' + v['单词'], e.message)
-              }
-              return data
-            }
-          })
-          .filter(v => v)
-        if (words.length) {
-          let repeat = []
-          let noRepeat = []
-          words.map((v: any) => {
-            let rIndex = runtimeStore.editDict.words.findIndex(s => s.word === v.word)
-            if (rIndex > -1) {
-              v.index = rIndex
-              repeat.push(v)
-            } else {
-              noRepeat.push(v)
-            }
-          })
-
-          runtimeStore.editDict.words = runtimeStore.editDict.words.concat(noRepeat)
-
-          if (repeat.length) {
-            MessageBox.confirm(
-              '单词"' + repeat.map(v => v.word).join(', ') + '" 已存在，是否覆盖原单词？',
-              '检测到重复单词',
-              () => {
-                repeat.map(v => {
-                  runtimeStore.editDict.words[v.index] = v
-                  delete runtimeStore.editDict.words[v.index]['index']
-                })
-              },
-              null,
-              () => {
-                tableRef.value.closeImportDialog()
-                e.target.value = ''
-                importLoading = false
-                allList = runtimeStore.editDict.words
-                tableRef.value.getData()
-                syncDictInMyStudyList()
-                Toast.success('导入成功！')
-              },
-              { t: $t }
-            )
-          } else {
-            tableRef.value.closeImportDialog()
-            e.target.value = ''
-            importLoading = false
-            allList = runtimeStore.editDict.words
-            tableRef.value.getData()
-            syncDictInMyStudyList()
-            Toast.success('导入成功！')
-          }
-        } else {
-          Toast.warning('导入失败！原因：没有数据/未认别到数据')
-        }
-      } else {
-        Toast.warning('导入失败！原因：没有数据')
-      }
-      e.target.value = ''
-      importLoading = false
-    }
-    reader.readAsBinaryString(file)
-  }
-}
-
-function importJsonData(e) {
-  if (!importLoading) {
-    let file = e.target.files[0]
-    if (!file) return
-
-    let reader = new FileReader()
-    reader.onload = async function (s) {
-      let data = s.target.result
-      let res: any[] = JSON.parse(data.toString())
-      console.log(res)
-      let words = res
-        .filter(v => v.word)
-        .map(v => {
-          return getDefaultWord(v)
-        })
-
-      if (words.length) {
-        let repeat = []
-        let noRepeat = []
-        words.map((v: any) => {
-          let rIndex = runtimeStore.editDict.words.findIndex(s => s.word === v.word)
-          if (rIndex > -1) {
-            v.index = rIndex
-            repeat.push(v)
-          } else {
-            noRepeat.push(v)
-          }
-        })
-
-        runtimeStore.editDict.words = runtimeStore.editDict.words.concat(noRepeat)
-
-        if (repeat.length) {
-          MessageBox.confirm(
-            '单词"' + repeat.map(v => v.word).join(', ') + '" 已存在，是否覆盖原单词？',
-            '检测到重复单词',
-            () => {
-              repeat.map(v => {
-                runtimeStore.editDict.words[v.index] = v
-                delete runtimeStore.editDict.words[v.index]['index']
-              })
-            },
-            null,
-            () => {
-              tableRef.value.closeImportDialog()
-              e.target.value = ''
-              importLoading = false
-              allList = runtimeStore.editDict.words
-              tableRef.value.getData()
-              syncDictInMyStudyList()
-              Toast.success('导入成功！')
-            },
-            { t: $t }
-          )
-        } else {
-          tableRef.value.closeImportDialog()
-          e.target.value = ''
-          importLoading = false
-          allList = runtimeStore.editDict.words
-          tableRef.value.getData()
-          syncDictInMyStudyList()
-          Toast.success('导入成功！')
-        }
-      } else {
-        Toast.warning('导入失败！原因：没有数据/未认别到数据')
-      }
-    }
-    reader.readAsText(file)
-  }
+function goImportPage() {
+  nav('/import', {
+    type: 'word',
+    targetId: String(runtimeStore.editDict.id),
+    step: '2',
+  })
 }
 
 async function exportXlsxData() {
@@ -774,20 +606,18 @@ defineRender(() => {
                 onDel={batchDel}
                 onSort={onSort}
                 onAdd={addWord}
-                onImportXlsx={importXlsxData}
-                onImportJson={importJsonData}
+                onImport={goImportPage}
                 onExportXlsx={exportXlsxData}
                 onExportJson={exportJsonData}
                 exportXlsxLoading={exportXlsxLoading}
                 exportJsonLoading={exportJsonLoading}
-                importLoading={importLoading}
                 readonly={!editable}
                 readonlyTip={$t('create_copy_to_edit')}
               >
                 {val => (
                   <WordItem
                     showTransPop={false}
-                    onClick={() => runtimeStore.editDict.custom && editWord(val.item)}
+                    onClick={() => editable && editWord(val.item)}
                     index={val.index}
                     showCollectIcon={false}
                     showMarkIcon={false}
@@ -812,11 +642,7 @@ defineRender(() => {
                               </BaseIcon>
                             </PopConfirm>
                           ) : (
-                            <BaseIcon
-                              class="option-icon"
-                              disabled={true}
-                              title={$t('create_copy_to_edit')}
-                            >
+                            <BaseIcon class="option-icon" disabled={true} title={$t('create_copy_to_edit')}>
                               <DeleteIcon />
                             </BaseIcon>
                           )}
@@ -921,16 +747,19 @@ defineRender(() => {
       ) : (
         <div class="card mb-0 dict-detail-card">
           <div class="dict-header flex justify-between items-center relative">
-            <BackIcon
-              class="dict-back z-2"
-              onClick={formClose}
-            />
+            <BackIcon class="dict-back z-2" onClick={formClose} />
             <div class="dict-title absolute page-title text-align-center w-full">
               {isAdd ? $t('create_dict') : $t('edit_dict')}
             </div>
           </div>
           <div class="center">
-            <EditBook isAdd={isAdd} isBook={false} initialData={_copyData} onClose={formClose} onSubmit={handleSubmit} />
+            <EditBook
+              isAdd={isAdd}
+              isBook={false}
+              initialData={_copyData}
+              onClose={formClose}
+              onSubmit={handleSubmit}
+            />
           </div>
         </div>
       )}

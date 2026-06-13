@@ -631,7 +631,7 @@
 	"tts_voice": "TTS-Stimme",
 	"tts_voice_preview_sentence": "Vorschausatz: ",
 	"tts_voice_setting_title": "TTS-Stimme",
-	"tts_voice_setting_desc": "Beispielsätze verwenden den browserintegrierten TTS. Wenn kein Ton vorhanden ist, wählen Sie eine verfügbare Stimme und klicken Sie auf den Lautsprecher für eine Vorschau. Unterschiedliche Browser/Geräte unterstützen verschiedene Stimmen. Diese Einstellung gilt nur für den aktuellen Browser.",
+	"tts_voice_setting_desc": "Die Aussprache der Beispielsätze verwendet die integrierte TTS-Funktion des Browsers. Falls kein Ton zu hören ist, wählen Sie bitte eine Stimme aus dem Dropdown-Menü aus. Verfügbare Stimmen unterscheiden sich je nach Browser und Gerät. Wenn keine Stimme Ton ausgibt, versuchen Sie bitte einen anderen Browser. Wir empfehlen die Verwendung von Edge.",
 	"tts_select_placeholder": "Stimme auswählen",
 	"tts_no_voice_available": "Keine Stimmen im Browser verfügbar",
 	"tts_local_voice": "Lokal",

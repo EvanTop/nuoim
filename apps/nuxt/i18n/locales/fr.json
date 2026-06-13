@@ -631,7 +631,7 @@
 	"tts_voice": "Voix TTS",
 	"tts_voice_preview_sentence": "Phrase d'aperçu : ",
 	"tts_voice_setting_title": "Voix TTS",
-	"tts_voice_setting_desc": "Les phrases d'exemple utilisent le TTS intégré au navigateur. S'il n'y a pas de son, sélectionnez une voix disponible et cliquez sur le haut-parleur pour un aperçu. Différents navigateurs/appareils prennent en charge différentes voix. Ce paramètre ne s'applique qu'au navigateur actuel.",
+	"tts_voice_setting_desc": "L'audio des exemples utilise le TTS intégré du navigateur. Si aucun son n'est émis, veuillez sélectionner une voix dans la liste déroulante. Les voix disponibles varient selon le navigateur et l'appareil. Si aucune voix ne produit de son, essayez un autre navigateur. Nous recommandons Edge.",
 	"tts_select_placeholder": "Sélectionner la voix",
 	"tts_no_voice_available": "Aucune voix disponible dans le navigateur",
 	"tts_local_voice": "Local",

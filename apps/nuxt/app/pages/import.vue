@@ -1,20 +1,18 @@
 <script setup lang="ts">
 import { BaseButton, BasePage, Textarea, Toast, UploadButton } from '@typewords/base'
-import { addDict, detail } from '@typewords/core/apis'
-import { parseImportFile } from '@typewords/core/apis/dict.ts'
+import { addDict } from '@typewords/core/apis'
 import { getWordList } from '@typewords/core/apis/words.ts'
-import { AppEnv } from '@typewords/core/config/env.ts'
+import { AppEnv, ENV, LIB_JS_URL } from '@typewords/core/config/env.ts'
 import { useBaseStore } from '@typewords/core/stores/base.ts'
 import { useRuntimeStore } from '@typewords/core/stores/runtime.ts'
 import { DictType } from '@typewords/core/types/enum.ts'
-import { getDefaultDict, getDefaultWord } from '@typewords/core/types/func.ts'
-import type { Dict } from '@typewords/core/types/types.ts'
-import { cloneDeep } from '@typewords/core/utils'
+import { getDefaultArticle, getDefaultDict, getDefaultWord } from '@typewords/core/types/func.ts'
+import type { Article, Dict } from '@typewords/core/types/types.ts'
+import { cloneDeep, loadJsLib } from '@typewords/core/utils'
+import saveAs from 'file-saver'
 import { nanoid } from 'nanoid'
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import ArticleDetailPage from './(articles)/book/[id].vue'
-import WordDetailPage from './(words)/dict.vue'
 import Header from '@typewords/core/components/Header.vue'
 import EditBook from '@typewords/core/components/article/EditBook.vue'
 import Book from '@typewords/core/components/Book.vue'
@@ -23,6 +21,16 @@ import { useI18n } from 'vue-i18n'
 
 type ImportStep = 1 | 2 | 3
 type ImportType = 'word' | 'article'
+
+type ImportResultSummary = {
+  successCount: number
+  skippedCount: number
+  failedItems: string[]
+  type: ImportType
+}
+
+const IMPORT_RESULT_STORAGE_PREFIX = 'import-result-'
+const IMPORT_ARTICLES_COUNT_PREFIX = 'import-articles-count-'
 
 const route = useRoute()
 const router = useRouter()
@@ -38,22 +46,53 @@ const selectedFile = ref<File | null>(null)
 const selectedFileName = ref('')
 const uploading = ref(false)
 const importing = ref(false)
-const importResult = ref('')
+const importSummary = ref<ImportResultSummary | null>(null)
 const { t } = useI18n()
 
-const importType = computed<ImportType>(() => (route.query.type === 'article' ? 'article' : 'word'))
+const importType = computed(() => (route.query.type === 'article' ? 'article' : 'word') as ImportType)
 const isWord = computed(() => importType.value === 'word')
 const source = computed(() => (isWord.value ? base.word : base.article))
 const targetLabel = computed(() => (isWord.value ? '词典' : '书籍'))
 const contentLabel = computed(() => (isWord.value ? '单词' : '文章'))
 const currentTarget = computed(() => selectedDict.value ?? pendingDict.value)
+const failedCount = computed(() => importSummary.value?.failedItems.length ?? 0)
+
+function importResultStorageKey(targetId: string) {
+  return `${IMPORT_RESULT_STORAGE_PREFIX}${targetId}`
+}
+
+function articlesCountStorageKey(targetId: string) {
+  return `${IMPORT_ARTICLES_COUNT_PREFIX}${targetId}`
+}
+
+function saveImportSummary(targetId: string, summary: ImportResultSummary) {
+  sessionStorage.setItem(importResultStorageKey(targetId), JSON.stringify(summary))
+}
+
+function loadImportSummary(targetId: string): ImportResultSummary | null {
+  try {
+    const raw = sessionStorage.getItem(importResultStorageKey(targetId))
+    if (!raw) return null
+    const summary = JSON.parse(raw) as Partial<ImportResultSummary>
+    return {
+      successCount: summary.successCount ?? 0,
+      skippedCount: summary.skippedCount ?? 0,
+      failedItems: summary.failedItems ?? [],
+      type: summary.type ?? importType.value,
+    }
+  } catch {
+    return null
+  }
+}
 
 const availableDicts = computed(() => source.value.bookList.filter(item => item.id && (item.custom || item.system)))
 
 const manualWords = computed(() =>
   textInput.value
     .split('\n')
-    .map(item => item.trim())
+    .map(item => {
+      return item.trim().replaceAll(',', '').replaceAll('，', '').replaceAll('"', '')
+    })
     .filter(Boolean)
 )
 
@@ -63,20 +102,48 @@ function findTargetById(id?: string) {
 }
 
 function normalizeStep(value: unknown): ImportStep {
-  return value === '2' || value === 2 ? 2 : value === '3' || value === 3 ? 3 : 1
+  if (value === '3' || value === 3) return 3
+  if (value === '2' || value === 2) return 2
+  return 1
 }
+
 
 function restoreFromRoute() {
   step.value = normalizeStep(route.query.step)
-  const target = findTargetById(route.query.targetId as string)
+  let target = findTargetById(route.query.targetId as string)
+  const queryTargetId = String(route.query.targetId || '')
+  if (!target && queryTargetId && String(runtimeStore.editDict.id) === queryTargetId) {
+    target = runtimeStore.editDict
+  }
   if (target) {
     selectedDict.value = target
     pendingDict.value = null
     runtimeStore.editDict = getDefaultDict(cloneDeep(target))
   }
-  if (step.value === 3 && !runtimeStore.editDict.id && target) {
-    runtimeStore.editDict = getDefaultDict(cloneDeep(target))
+
+  const targetId = String(route.query.targetId || runtimeStore.editDict.id || '')
+
+  if (step.value === 3) {
+    if (target && !runtimeStore.editDict.id) {
+      runtimeStore.editDict = getDefaultDict(cloneDeep(target))
+    }
+    const summary = targetId ? loadImportSummary(targetId) : null
+    if (summary) {
+      importSummary.value = summary
+    } else {
+      step.value = 2
+      router.replace({
+        query: {
+          ...route.query,
+          type: importType.value,
+          step: '2',
+          targetId: targetId || undefined,
+        },
+      })
+      return
+    }
   }
+
   if (step.value > 1 && !currentTarget.value && !runtimeStore.editDict.id) {
     step.value = 1
   }
@@ -91,7 +158,7 @@ watch(importType, () => {
   textInput.value = ''
   selectedFile.value = null
   selectedFileName.value = ''
-  importResult.value = ''
+  importSummary.value = null
   if (!route.query.step) step.value = 1
 })
 
@@ -156,29 +223,10 @@ async function persistTarget() {
   return upsertTarget(dict)
 }
 
-function mergeWordsLocal(dict: Dict, words: string[]) {
-  const next = getDefaultDict(cloneDeep(dict))
-  const exists = new Set(next.words.map(item => item.word.toLowerCase()))
-  words.forEach(word => {
-    const key = word.toLowerCase()
-    if (!exists.has(key)) {
-      next.words.push(getDefaultWord({ id: nanoid(6), word, custom: true }))
-      exists.add(key)
-    }
-  })
-  next.length = next.words.length
-  return next
-}
-
-async function refreshRemoteDict(dict: Dict) {
-  if (!AppEnv.CAN_REQUEST || !dict.id) return dict
-  const res = await detail({ id: dict.id })
-  return res.success ? getDefaultDict({ ...dict, ...res.data }) : dict
-}
-
-function completeImport(dict: Dict, message = '导入成功') {
+function completeImport(dict: Dict, summary: ImportResultSummary) {
   const saved = upsertTarget(dict)
-  importResult.value = message
+  importSummary.value = summary
+  saveImportSummary(String(saved.id), summary)
   step.value = 3
   router.replace({
     query: {
@@ -190,49 +238,333 @@ function completeImport(dict: Dict, message = '导入成功') {
   })
 }
 
+function goToDetail() {
+  if (!runtimeStore.editDict.id) return Toast.warning('请先完成导入')
+  if (isWord.value) {
+    router.push('/dict')
+  } else {
+    router.push(`/book/${runtimeStore.editDict.id}`)
+  }
+}
+
+function downloadFailedTxt() {
+  const items = importSummary.value?.failedItems ?? []
+  if (!items.length) return
+  const content = items.join('\n')
+  const blob = new Blob([content], { type: 'text/plain;charset=utf-8' })
+  const name = runtimeStore.editDict.name || currentTarget.value?.name || '导入'
+  saveAs(blob, `导入失败-${name}.txt`)
+}
+
+async function downloadWordTemplate(filename: string) {
+  try {
+    const res = await fetch(`${ENV.LIBS_URL}${filename}`)
+    if (!res.ok) throw new Error('下载失败')
+    const blob = await res.blob()
+    saveAs(blob, filename)
+  } catch {
+    Toast.error('模板下载失败，请稍后重试')
+  }
+}
+
+function readFileAsBinary(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = e => resolve(String(e.target?.result ?? ''))
+    reader.onerror = () => reject(new Error('读取文件失败'))
+    reader.readAsBinaryString(file)
+  })
+}
+
+function readFileAsText(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = e => resolve(String(e.target?.result ?? ''))
+    reader.onerror = () => reject(new Error('读取文件失败'))
+    reader.readAsText(file)
+  })
+}
+
+function dedupeWords(words: string[]) {
+  const seen = new Set<string>()
+  const unique: string[] = []
+  words.forEach(word => {
+    const key = word.toLowerCase()
+    if (seen.has(key)) return
+    seen.add(key)
+    unique.push(word)
+  })
+  return unique
+}
+
+function parseTxtWordContent(content: string) {
+  return content
+    .split(/\r\n|\r|\n/)
+    .map(line => line.trim())
+    .filter(Boolean)
+}
+
+function parseJsonWordContent(content: string) {
+  let parsed: unknown
+  try {
+    parsed = JSON.parse(content)
+  } catch {
+    throw new Error('JSON 解析失败')
+  }
+  if (!Array.isArray(parsed)) {
+    throw new Error('JSON 格式错误：顶层必须是数组')
+  }
+
+  const words: string[] = []
+  parsed.forEach(item => {
+    if (typeof item === 'string') {
+      const word = item.trim()
+      if (word) words.push(word)
+      return
+    }
+    if (item && typeof item === 'object' && 'word' in item) {
+      const word = String((item as { word: unknown }).word).trim()
+      if (word) words.push(word)
+    }
+  })
+  return words
+}
+
+function getFileExt(file: File) {
+  return file.name.split('.').pop()?.toLowerCase() ?? ''
+}
+
+async function parseWordFile(file: File): Promise<string[]> {
+  const ext = getFileExt(file)
+
+  if (ext === 'txt') {
+    const content = await readFileAsText(file)
+    return dedupeWords(parseTxtWordContent(content))
+  }
+
+  if (ext === 'json') {
+    const content = await readFileAsText(file)
+    return dedupeWords(parseJsonWordContent(content))
+  }
+
+  if (ext === 'xlsx' || ext === 'xls') {
+    const XLSX = await loadJsLib('XLSX', LIB_JS_URL.XLSX)
+    const data = await readFileAsBinary(file)
+    const workbook = XLSX.read(data, { type: 'binary' })
+    const sheetName = workbook.SheetNames[0]
+    const rows: any[] = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName])
+    const words = rows.map(row => String(row['单词'] ?? row.word ?? '').trim()).filter(Boolean)
+    return dedupeWords(words)
+  }
+
+  throw new Error(`不支持的文件格式「${ext}」，请使用 .txt / .json / .xlsx`)
+}
+
+type ArticleParseResult = {
+  articles: Article[]
+  failedItems: string[]
+}
+
+type ArticleRowParseResult = {
+  article?: Article
+  skip?: boolean
+  failed?: boolean
+}
+
+type ArticleWithIndex = Article & { index?: number }
+
+function getArticleRowField(row: Record<string, unknown>, ...keys: string[]) {
+  for (const key of keys) {
+    const val = row[key]
+    if (val !== undefined && val !== null && String(val).trim()) {
+      return String(val).trim()
+    }
+  }
+  return ''
+}
+
+function parseArticleRow(row: Record<string, unknown>): ArticleRowParseResult {
+  const title = getArticleRowField(row, 'title', '原文标题')
+  const text = getArticleRowField(row, 'text', '原文正文')
+  const titleTranslate = getArticleRowField(row, 'titleTranslate', '译文标题')
+  const textTranslate = getArticleRowField(row, 'textTranslate', '译文正文')
+  const audioSrc = getArticleRowField(row, 'audioSrc', '音频地址')
+  const hasContent = title || text || titleTranslate || textTranslate || audioSrc
+
+  if (!hasContent) return { skip: true }
+  if (!title || !text) return { failed: true }
+
+  return {
+    article: getDefaultArticle({
+      id: nanoid(6),
+      title,
+      titleTranslate,
+      text,
+      textTranslate,
+      audioSrc,
+    }),
+  }
+}
+
+function collectArticleRows(rows: Record<string, unknown>[], label: 'json' | 'xlsx'): ArticleParseResult {
+  const articles: Article[] = []
+  const failedItems: string[] = []
+  const startIndex = label === 'json' ? 2 : 3
+
+  rows.slice(startIndex).forEach((row, index) => {
+    const result = parseArticleRow(row)
+    if (result.skip) return
+    if (result.failed) {
+      failedItems.push(label === 'json' ? `第 ${index + startIndex} 条` : `第 ${index + startIndex} 行`)
+      return
+    }
+    if (result.article) articles.push(result.article)
+  })
+
+  return { articles, failedItems }
+}
+
+async function parseArticleFile(file: File): Promise<ArticleParseResult> {
+  const ext = getFileExt(file)
+
+  if (ext === 'json') {
+    const content = await readFileAsText(file)
+    let parsed: unknown
+    try {
+      parsed = JSON.parse(content)
+    } catch {
+      throw new Error('JSON 解析失败')
+    }
+    if (!Array.isArray(parsed)) {
+      throw new Error('JSON 格式错误：顶层必须是数组')
+    }
+    return collectArticleRows(parsed as Record<string, unknown>[], 'json')
+  }
+
+  if (ext === 'xlsx' || ext === 'xls') {
+    const XLSX = await loadJsLib('XLSX', LIB_JS_URL.XLSX)
+    const data = await readFileAsBinary(file)
+    const workbook = XLSX.read(data, { type: 'binary' })
+    const sheetName = workbook.SheetNames[0]
+    const rows: Record<string, unknown>[] = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName])
+    debugger
+    return collectArticleRows(rows, 'xlsx')
+  }
+
+  throw new Error(`不支持的文件格式「${ext}」，请使用 .json / .xlsx`)
+}
+
+function splitArticlesByDuplicate(target: Dict, articles: Article[]) {
+  const repeat: ArticleWithIndex[] = []
+  const noRepeat: Article[] = []
+
+  articles.forEach(article => {
+    const rIndex = target.articles.findIndex(item => item.title === article.title)
+    if (rIndex > -1) {
+      repeat.push({ ...article, index: rIndex })
+    } else {
+      noRepeat.push(article)
+    }
+  })
+
+  return { repeat, noRepeat }
+}
+
+function applyArticleMerge(
+  target: Dict,
+  noRepeat: Article[],
+  repeat: ArticleWithIndex[],
+  overwriteRepeat: boolean
+) {
+  const next = cloneDeep(target)
+  noRepeat.forEach(article => next.articles.push(article))
+  let successCount = noRepeat.length
+  let skippedCount = 0
+
+  if (overwriteRepeat) {
+    repeat.forEach(article => {
+      if (article.index === undefined) return
+      const { index, ...rest } = article
+      next.articles[index] = rest as Article
+      successCount++
+    })
+  } else {
+    skippedCount = repeat.length
+  }
+
+  next.length = next.articles.length
+  return { next, successCount, skippedCount }
+}
+
+function finishArticleImport(
+  target: Dict,
+  noRepeat: Article[],
+  repeat: ArticleWithIndex[],
+  overwriteRepeat: boolean,
+  failedItems: string[]
+) {
+  const { next, successCount, skippedCount } = applyArticleMerge(target, noRepeat, repeat, overwriteRepeat)
+  if (!successCount && !skippedCount && !failedItems.length) {
+    Toast.warning('文件中没有可导入的文章')
+    return
+  }
+  completeImport(next, {
+    successCount,
+    skippedCount,
+    failedItems,
+    type: 'article',
+  })
+}
+
+async function mergeWordsFromList(
+  target: Dict,
+  newWords: string[]
+): Promise<{ next: Dict; summary: ImportResultSummary } | null> {
+  const existsSet = new Set(target.words.map(w => w.word))
+  const filtered = newWords.filter(w => !existsSet.has(w))
+  const skippedCount = newWords.length - filtered.length
+  if (!filtered.length) {
+    Toast.warning('所有单词已存在于词典中，无需重复导入')
+    return null
+  }
+  if (filtered.length > 5000) {
+    Toast.warning('单词数量超过5000')
+    return null
+  }
+
+  const res = await getWordList(
+    null,
+    filtered.map(v => v.trim())
+  )
+  if (!res.success) {
+    throw new Error(res.msg || '导入失败')
+  }
+
+  const { list = [], missing = [] } = (res.data ?? {}) as { list: any[]; missing: string[] }
+  const next = cloneDeep(target)
+  list.forEach(item => {
+    next.words.push(getDefaultWord({ ...item, id: item.id ?? nanoid(6), custom: !item.trans?.length }))
+  })
+  next.length = next.words.length
+
+  const successCount = filtered.length - missing.length
+  const summary: ImportResultSummary = {
+    successCount,
+    skippedCount,
+    failedItems: missing,
+    type: 'word',
+  }
+  return { next, summary }
+}
+
 async function importManualWords() {
   if (!manualWords.value.length) return Toast.warning('请输入要导入的单词')
 
   importing.value = true
   try {
-    let target = await persistTarget()
-
-    // 提交前去重：过滤掉目标词典中已存在的单词
-    const existsSet = new Set(target.words.map(w => w.word))
-    const newWords = manualWords.value.filter(w => !existsSet.has(w))
-    if (!newWords.length) {
-      return Toast.warning('所有单词已存在于词典中，无需重复导入')
-    }
-
-    const res = await getWordList(
-      null,
-      newWords.map(v => v.trim())
-    )
-    if (!res.success) {
-      return Toast.error(res.msg || '导入失败')
-    }
-
-    const { list = [], missing = [] } = (res.data ?? {}) as { list: any[]; missing: string[] }
-
-    // list 与 newWords 顺序一一对应：找到的是完整数据，找不到的是只含 word 的空壳占位
-    // 全量合并进词典，顺序与用户提交时完全一致
-    const next = cloneDeep(target)
-    list.forEach(item => {
-      next.words.push(getDefaultWord({ ...item, id: item.id ?? nanoid(6), custom: !item.trans?.length }))
-    })
-    next.length = next.words.length
-
-    // 提示未找到的单词
-    if (missing.length) {
-      const preview = missing.slice(0, 5).join('、')
-      const suffix = missing.length > 5 ? ` 等 ${missing.length} 个` : ''
-      Toast.warning(`以下单词在词库中未找到：${preview}${suffix}`)
-    }
-
-    completeImport(
-      next,
-      `导入完成，共 ${next.words.length} 个单词${missing.length ? `（${missing.length} 个未找到）` : ''}`
-    )
+    const target = await persistTarget()
+    const result = await mergeWordsFromList(target, manualWords.value)
+    if (result) completeImport(result.next, result.summary)
   } catch (error: any) {
     Toast.error(error?.message || '导入失败')
   } finally {
@@ -247,43 +579,43 @@ function selectFile(e: any) {
   selectedFileName.value = file.name
 }
 
-function extractDictFromResponse(data: any, fallback: Dict) {
-  if (data?.id || data?.name || data?.words || data?.articles) {
-    return getDefaultDict({ ...fallback, ...data })
-  }
-  if (data?.dict) {
-    return getDefaultDict({ ...fallback, ...data.dict })
-  }
-  return fallback
-}
-
 async function importSelectedFile() {
   if (!selectedFile.value) return Toast.warning('请先选择要上传的文件')
 
   uploading.value = true
   try {
-    let target = await persistTarget()
-    const formData = new FormData()
-    formData.append('file', selectedFile.value)
+    const target = await persistTarget()
 
-    if (AppEnv.CAN_REQUEST) {
-      const res = await parseImportFile(
-        {
-          type: importType.value,
-          dictId: target.userDictId ?? target.id,
-          id: target.id,
-        },
-        formData
-      )
-      if (!res.success) return Toast.error(res.msg || '导入失败')
-      target = extractDictFromResponse(res.data, target)
-      if (!target.words.length && !target.articles.length) {
-        target = await refreshRemoteDict(target)
-      }
-      completeImport(target)
-    } else {
-      Toast.warning('离线模式暂不支持文件导入，请使用手动输入')
+    if (isWord.value) {
+      const words = await parseWordFile(selectedFile.value)
+      if (!words.length) return Toast.warning('文件中没有可导入的单词')
+      const result = await mergeWordsFromList(target, words)
+      if (result) completeImport(result.next, result.summary)
+      return
     }
+
+    const { articles, failedItems } = await parseArticleFile(selectedFile.value)
+    if (!articles.length && !failedItems.length) {
+      return Toast.warning('文件中没有可导入的文章')
+    }
+
+    const { repeat, noRepeat } = splitArticlesByDuplicate(target, articles)
+    if (repeat.length) {
+      MessageBox.confirm(
+        '文章"' + repeat.map(v => v.title).join(', ') + '" 已存在，是否覆盖原有文章？',
+        '检测到重复文章',
+        () => void 0,
+        () => finishArticleImport(target, noRepeat, repeat, false, failedItems),
+        null,
+        {
+          t,
+          onConfirm: () => finishArticleImport(target, noRepeat, repeat, true, failedItems),
+        }
+      )
+      return
+    }
+
+    finishArticleImport(target, noRepeat, [], false, failedItems)
   } catch (error: any) {
     Toast.error(error?.message || '导入失败')
   } finally {
@@ -293,6 +625,11 @@ async function importSelectedFile() {
 
 function submitWordImport() {
   const hasManual = manualWords.value.length > 0
+  if (hasManual) {
+    if (manualWords.value.length > 5000) {
+      return Toast.warning('单词数量超过5000')
+    }
+  }
   const hasFile = !!selectedFile.value
   if (!hasManual && !hasFile) return Toast.warning('请输入单词或选择文件')
   if (hasManual && hasFile) {
@@ -340,6 +677,7 @@ async function goManualArticleEditWithoutConfirm() {
   importing.value = true
   try {
     const target = await persistTarget()
+    sessionStorage.setItem(articlesCountStorageKey(String(target.id)), String(target.articles.length))
     runtimeStore.editDict = getDefaultDict(cloneDeep(target))
     await router.push({
       path: '/batch-edit-article',
@@ -357,13 +695,11 @@ async function goManualArticleEditWithoutConfirm() {
 </script>
 
 <template>
-  <component :is="isWord ? WordDetailPage : ArticleDetailPage" v-if="step === 3" />
-
-  <BasePage v-else>
+  <BasePage>
     <div class="card import-page w-full">
       <Header :title="`导入${contentLabel}`" />
       <div class="stepper" aria-label="导入步骤">
-        <div class="step-item active">
+        <div class="step-item" :class="{ active: step >= 1 }">
           <span>1</span>
           <strong>选择{{ targetLabel }}</strong>
         </div>
@@ -372,14 +708,14 @@ async function goManualArticleEditWithoutConfirm() {
           <span>2</span>
           <strong>导入{{ contentLabel }}</strong>
         </div>
-        <div class="step-rail" />
-        <div class="step-item">
+        <div class="step-rail" :class="{ active: step >= 3 }" />
+        <div class="step-item" :class="{ active: step >= 3 }">
           <span>3</span>
-          <strong>查看详情</strong>
+          <strong>导入结果</strong>
         </div>
       </div>
 
-      <main class="main-panel mt-4">
+      <main class="main-panel">
         <section v-if="step === 1" class="workflow-section">
           <div class="section-heading">
             <div class="section-title">选择导入位置</div>
@@ -399,32 +735,17 @@ async function goManualArticleEditWithoutConfirm() {
             </li>
           </ul>
 
-          <div
-            v-if="showCreateForm"
-            class="border border-[var(--color-input-border)] rounded-md p-4 bg-[var(--color-card-bg)]"
-          >
-            <EditBook
-              :is-add="true"
-              :is-book="!isWord"
-              submit-mode="draft"
-              fluid
-              @submit="handleDraftSubmit"
-              @close="showCreateForm = false"
-            />
+          <div v-if="showCreateForm"
+            class="border border-[var(--color-input-border)] rounded-md p-4 bg-[var(--color-card-bg)]">
+            <EditBook :is-add="true" :is-book="!isWord" submit-mode="draft" fluid @submit="handleDraftSubmit"
+              @close="showCreateForm = false" />
           </div>
 
           <div class="section-title">{{ targetLabel }}列表</div>
           <div v-if="availableDicts.length" class="flex gap-4 flex-wrap">
-            <Book
-              v-for="dict in availableDicts"
-              :key="dict.id"
-              :is-add="false"
-              :item="dict"
-              :quantifier="isWord ? '词' : '篇'"
-              :show-progress="false"
-              :selected="currentTarget?.id === dict.id"
-              @click="selectTarget(dict)"
-            />
+            <Book v-for="dict in availableDicts" :key="dict.id" :is-add="false" :item="dict"
+              :quantifier="isWord ? '词' : '篇'" :show-progress="false" :selected="currentTarget?.id === dict.id"
+              @click="selectTarget(dict)" />
           </div>
           <div v-else class="empty-state">
             <IconFluentBook20Regular />
@@ -435,13 +756,8 @@ async function goManualArticleEditWithoutConfirm() {
           <template v-if="pendingDict">
             <div class="section-title">新建待导入{{ targetLabel }}</div>
             <div class="flex gap-4 flex-wrap">
-              <Book
-                :is-add="false"
-                :item="pendingDict"
-                :quantifier="isWord ? '词' : '篇'"
-                :show-progress="false"
-                :selected="true"
-              />
+              <Book :is-add="false" :item="pendingDict" :quantifier="isWord ? '词' : '篇'" :show-progress="false"
+                :selected="true" />
             </div>
           </template>
 
@@ -452,7 +768,7 @@ async function goManualArticleEditWithoutConfirm() {
           </div>
         </section>
 
-        <section v-else class="workflow-section">
+        <section v-else-if="step === 2" class="workflow-section">
           <div class="section-heading">
             <div class="section-title">导入到：{{ currentTarget?.name }}</div>
           </div>
@@ -464,20 +780,23 @@ async function goManualArticleEditWithoutConfirm() {
                 <IconFluentArrowUpload20Regular />
                 <span>上传文件</span>
               </div>
-              <p>支持导入 .txt / .json / .xlsx 格式文件</p>
+              <div class="my-2">支持导入 {{ isWord ? '.txt / .json / .xlsx' : '.json / .xlsx' }} 格式文件</div>
+              <div class="my-2 font-bold text-red">下载模板文件，按照固定格式填写后上传</div>
+              <div class="my-2 font-bold text-red">暂不支持导入 PDF 文件，您可让 AI 帮您制作导入所需格式的文件</div>
               <div class="flex gap-3 flex-col mb-4">
-                <div>
-                  <a href="/templates/template.txt" download>下载 txt 模板</a>
+                <div v-if="isWord">
+                  <a href="#" @click.prevent="downloadWordTemplate(`import-${importType}-template.txt`)">下载 txt 模板</a>
                 </div>
                 <div>
-                  <a href="/templates/template.json" download>下载 json 模板</a>
+                  <a href="#" @click.prevent="downloadWordTemplate(`import-${importType}-template.json`)">下载 json 模板</a>
                 </div>
                 <div>
-                  <a href="/templates/template.xlsx" download>下载 xlsx 模板</a>
+                  <a href="#" @click.prevent="downloadWordTemplate(`import-${importType}-template.xlsx`)">下载 xlsx 模板</a>
                 </div>
               </div>
               <div class="flex items-center gap-3 flex-wrap">
-                <UploadButton accept=".txt,.json,.xlsx,.xls,.csv" :loading="uploading" @change="selectFile">
+                <UploadButton :accept="isWord ? '.txt,.json,.xlsx,.xls' : '.json,.xlsx,.xls'" :loading="uploading"
+                  @change="selectFile">
                   选择文件
                 </UploadButton>
                 <span class="color-gray text-sm" v-if="selectedFileName">{{ selectedFileName }}</span>
@@ -491,14 +810,11 @@ async function goManualArticleEditWithoutConfirm() {
                 <IconFluentTextAlignLeft16Regular />
                 <span>手动输入</span>
               </div>
-              <Textarea
-                class="my-2"
-                v-model="textInput"
-                placeholder="一行一个单词，例如：&#10;apple&#10;banana&#10;cherry"
-                :autosize="{ minRows: 20, maxRows: 20 }"
-              />
+              <Textarea class="my-2" v-model="textInput"
+                placeholder="一行一个单词，例如：&#10;apple,&#10;banana&#10;cherry&#10;行尾带不带逗号都可以"
+                :autosize="{ minRows: 20, maxRows: 20 }" />
               <div class="method-footer">
-                <span>已输入 {{ manualWords.length }} / 1000 个单词</span>
+                <span>已输入 {{ manualWords.length }} / 5000 个单词</span>
               </div>
             </div>
             <div class="method-panel" v-else>
@@ -506,31 +822,69 @@ async function goManualArticleEditWithoutConfirm() {
                 <IconFluentDocument20Regular />
                 <span>手动输入文章</span>
               </div>
-              <p>先保存书籍，再进入已有文章编辑页面；可以连续新增多篇文章。</p>
-              <BaseButton type="primary" :loading="importing" @click="goManualArticleEdit"> 进入文章编辑 </BaseButton>
+              <p>进入文章编辑页面，可以连续新增多篇文章。</p>
+              <div class="text-right">
+                <BaseButton type="primary" size="large" :loading="importing" @click="goManualArticleEdit"> 进入文章编辑
+                </BaseButton>
+              </div>
             </div>
           </div>
 
           <div class="actions-row step2-actions">
-            <BaseButton type="info" @click="step = 1">返回上一步</BaseButton>
-            <BaseButton
-              v-if="isWord"
-              type="primary"
-              :loading="importing || uploading"
-              :disabled="!manualWords.length && !selectedFile"
-              @click="submitWordImport"
-            >
+            <BaseButton type="info" size="large" @click="step = 1">返回上一步</BaseButton>
+            <BaseButton v-if="isWord" type="primary" size="large" :loading="importing || uploading"
+              :disabled="!manualWords.length && !selectedFile" @click="submitWordImport">
               提交
             </BaseButton>
-            <BaseButton
-              v-else
-              type="primary"
-              :loading="uploading"
-              :disabled="!selectedFile"
-              @click="importSelectedFile"
-            >
+            <BaseButton v-else type="primary" size="large" :loading="uploading" :disabled="!selectedFile"
+              @click="importSelectedFile">
               提交
             </BaseButton>
+          </div>
+        </section>
+
+        <section v-else-if="step === 3 && importSummary" class="workflow-section">
+          <div class="section-heading">
+            <div class="section-title">导入结果</div>
+          </div>
+
+          <div class="status-strip mb-4">
+            <div class="flex items-center gap-2">
+              <IconFluentCheckmarkCircle20Regular />
+              <span>导入完成</span>
+            </div>
+            <div class="ml-10">
+              <li>成功 {{ importSummary.successCount }} {{ isWord ? '个' : '篇' }}</li>
+              <li v-if="importSummary.skippedCount">跳过 {{ importSummary.skippedCount }} {{ isWord ? '个' : '篇' }}（{{
+                targetLabel
+              }}中已存在）</li>
+              <li v-if="failedCount">
+                {{ failedCount }} 个失败（原因：{{
+                  isWord
+                    ? '未收录。单词会被添加到词典中，但没有其他信息，如释义、例句等'
+                    : '缺少 title 或 text 必填字段'
+                }}）
+              </li>
+            </div>
+          </div>
+
+          <div v-if="failedCount" class="result-panel">
+            <div class="section-title text-base">失败项</div>
+            <ul class="result-list">
+              <li v-for="(item, index) in importSummary.failedItems" :key="`${item}-${index}`">
+                <span>{{ item }}</span>
+              </li>
+            </ul>
+          </div>
+
+          <div class="actions-row step2-actions">
+            <BaseButton type="info" size="large" @click="step = 2">返回上一步</BaseButton>
+            <div>
+              <BaseButton type="info" size="large" v-if="failedCount" @click="downloadFailedTxt">
+                下载失败列表
+              </BaseButton>
+              <BaseButton type="primary" size="large" @click="goToDetail"> 查看详情 </BaseButton>
+            </div>
           </div>
         </section>
       </main>
@@ -699,7 +1053,6 @@ async function goManualArticleEditWithoutConfirm() {
 
 .create-panel,
 .status-strip,
-.empty-state,
 .method-panel {
   border: 1px solid var(--color-input-border);
   border-radius: 0.65rem;
@@ -756,7 +1109,6 @@ async function goManualArticleEditWithoutConfirm() {
   align-items: center;
   background: color-mix(in srgb, var(--color-select-bg) 9%, var(--color-card-bg));
   color: var(--color-font-1);
-  display: flex;
   gap: 0.55rem;
   padding: 0.8rem 0.95rem;
 }
@@ -797,7 +1149,7 @@ async function goManualArticleEditWithoutConfirm() {
     white-space: nowrap;
   }
 
-  > span:last-of-type {
+  >span:last-of-type {
     color: var(--color-font-3);
     font-size: 0.85rem;
     margin-top: 0.35rem;
@@ -826,26 +1178,6 @@ async function goManualArticleEditWithoutConfirm() {
   position: absolute;
   right: 0.85rem;
   top: 0.85rem;
-}
-
-.empty-state {
-  align-items: center;
-  color: var(--color-font-3);
-  display: flex;
-  flex-direction: column;
-  gap: 0.4rem;
-  justify-content: center;
-  min-height: 13rem;
-  text-align: center;
-
-  svg {
-    color: var(--color-select-bg);
-    font-size: 2rem;
-  }
-
-  strong {
-    color: var(--color-font-1);
-  }
 }
 
 .actions-row {
@@ -903,6 +1235,7 @@ async function goManualArticleEditWithoutConfirm() {
     font-size: 1.25rem;
   }
 }
+
 .method-footer {
   align-items: center;
   display: flex;
@@ -910,6 +1243,45 @@ async function goManualArticleEditWithoutConfirm() {
   justify-content: space-between;
   margin-top: auto;
 }
+
+.result-stats {
+  color: var(--color-font-2);
+  display: flex;
+  flex-wrap: wrap;
+  font-size: 0.9rem;
+  gap: 1rem;
+}
+
+.result-panel {
+  border: 1px solid var(--color-input-border);
+  border-radius: 0.65rem;
+  max-height: 20rem;
+  overflow: auto;
+  padding: 0.85rem 1rem;
+}
+
+.result-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  list-style: none;
+  margin: 0.75rem 0 0;
+  padding: 0;
+
+  li {
+    border-bottom: 1px solid var(--color-input-border);
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    padding-bottom: 0.65rem;
+
+    &:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+  }
+}
+
 
 @media (max-width: 1180px) {
   .import-header {
@@ -919,6 +1291,7 @@ async function goManualArticleEditWithoutConfirm() {
 }
 
 @media (max-width: 900px) {
+
   .import-layout,
   .input-split {
     grid-template-columns: 1fr;
@@ -930,6 +1303,7 @@ async function goManualArticleEditWithoutConfirm() {
 }
 
 @media (max-width: 640px) {
+
   .import-header,
   .main-panel,
   .context-panel {

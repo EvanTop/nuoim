@@ -104,7 +104,7 @@ function previewTtsVoice(voiceName: string) {
     <div v-if="!currentTtsVoice" class="text-sm text-orange-500 mt-1 mb-2">
       {{ $t('tts_no_voice_warning') }}
     </div>
-    
+
 
     <!-- 文章音效 -->
     <div class="line"></div>

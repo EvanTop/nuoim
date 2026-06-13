@@ -631,7 +631,7 @@
 	"tts_voice": "Suara TTS",
 	"tts_voice_preview_sentence": "Kalimat pratinjau: ",
 	"tts_voice_setting_title": "Suara TTS",
-	"tts_voice_setting_desc": "Kalimat contoh menggunakan TTS bawaan browser. Jika tidak ada suara, pilih suara yang tersedia dan klik speaker untuk pratinjau. Browser/perangkat yang berbeda mendukung suara yang berbeda. Pengaturan ini hanya berlaku untuk browser saat ini.",
+	"tts_voice_setting_desc": "Audio contoh kalimat menggunakan TTS bawaan browser. Jika tidak ada suara, silakan pilih suara dari daftar dropdown. Suara yang tersedia berbeda-beda tergantung browser dan perangkat. Jika semua suara tidak menghasilkan audio, coba gunakan browser lain. Kami merekomendasikan Edge.",
 	"tts_select_placeholder": "Pilih suara",
 	"tts_no_voice_available": "Tidak ada suara tersedia di browser",
 	"tts_local_voice": "Lokal",

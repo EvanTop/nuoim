@@ -631,7 +631,7 @@
 	"tts_voice": "Giọng TTS",
 	"tts_voice_preview_sentence": "Câu thử nghe: ",
 	"tts_voice_setting_title": "Giọng TTS",
-	"tts_voice_setting_desc": "Câu ví dụ sử dụng TTS tích hợp trình duyệt. Nếu không có âm thanh, hãy chọn một giọng nói khả dụng và nhấp vào loa để nghe thử. Các trình duyệt/thiết bị khác nhau hỗ trợ các giọng nói khác nhau. Cài đặt này chỉ áp dụng cho trình duyệt hiện tại.",
+	"tts_voice_setting_desc": "Âm thanh của câu ví dụ sử dụng TTS tích hợp sẵn trong trình duyệt. Nếu không có âm thanh, vui lòng chọn một giọng đọc trong danh sách thả xuống. Các giọng đọc được hỗ trợ khác nhau tùy theo trình duyệt và thiết bị. Nếu tất cả các giọng đều không phát ra âm thanh, hãy thử đổi sang trình duyệt khác. Chúng tôi khuyến nghị sử dụng Edge.",
 	"tts_select_placeholder": "Chọn giọng nói",
 	"tts_no_voice_available": "Không có giọng nói khả dụng trong trình duyệt",
 	"tts_local_voice": "Cục bộ",

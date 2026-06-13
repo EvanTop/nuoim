@@ -75,6 +75,7 @@
   --color-translate-second: #818181;
 
   --book-width: 9.6rem;
+  --book-border: rgb(225, 217, 217);
 }
 
 html.dark {
@@ -121,6 +122,7 @@ html.dark {
   --bg-book: #35373a;
 
   --color-line: rgb(66, 66, 66);
+  --book-border: var(--bg-book);
 }
 
 @media (max-width: 1706px) {
@@ -415,9 +417,9 @@ a {
 .book {
   @extend .anim;
   @apply p-3 rounded-md relative cursor-pointer hover:bg-fifth border-item-solid flex flex-col justify-between shrink-0;
-  border: 1px solid transparent;
   background: var(--bg-book);
-  border-color: rgb(225, 217, 217);
+  border: 1px solid transparent;
+  border-color: var(--book-border);
   box-sizing: border-box;
   width: var(--book-width);
   height: calc(var(--book-width) * 1.4);
