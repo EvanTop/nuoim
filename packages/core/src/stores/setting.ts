@@ -69,6 +69,7 @@ export interface SettingState {
   identifyMethod: IdentifyMethod
   _ignoreWatch: boolean //忽略监听，避免重复保存和上传
   ttsVoiceMap: { key: string; voice: string }[] // 浏览器 TTS 声色映射，key 为 OS+浏览器组合（如 mac+chrome）
+  useInputMode: boolean //是否使用输入框模式
 }
 
 export const getDefaultSettingState = (): SettingState => ({
@@ -146,6 +147,7 @@ export const getDefaultSettingState = (): SettingState => ({
   identifyMethod: IdentifyMethod.SelfAssessment,
   _ignoreWatch: false,
   ttsVoiceMap: [],
+  useInputMode: false,
 })
 
 export const useSettingStore = defineStore('setting', {

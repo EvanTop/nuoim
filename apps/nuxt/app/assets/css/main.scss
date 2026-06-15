@@ -456,11 +456,7 @@ a {
     border-left: 0.1rem solid transparent;
   }
 }
-
-#typing-listener {
-  @apply fixed left-[-9999px] top-[-9999px] w-1 h-1 opacity-0.01 z-[-1] pointer-events-none border-none outline-none bg-transparent text-transparent;
-  font-size: 16px; // 防止iOS缩放
-}
+ 
 
 .btn-no-margin {
   .base-button + .base-button {

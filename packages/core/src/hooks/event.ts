@@ -1,7 +1,68 @@
 import { onDeactivated, onMounted, onUnmounted, watch } from 'vue'
 import { emitter, EventKey } from '../utils/eventBus'
-import { useRuntimeStore, useSettingStore } from '../stores'
+import { useSettingStore } from '../stores'
 import { isMobile } from '../utils'
+import { Toast } from '@typewords/base'
+
+const CODE_TO_CHAR: Record<string, string> = {
+  ...Object.fromEntries('ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').map(c => [`Key${c}`, c.toLowerCase()])),
+  ...Object.fromEntries(Array.from({ length: 10 }, (_, i) => [`Digit${i}`, String(i)])),
+  ...Object.fromEntries(Array.from({ length: 10 }, (_, i) => [`Numpad${i}`, String(i)])),
+  Minus: '-',
+  Equal: '=',
+  BracketLeft: '[',
+  BracketRight: ']',
+  Semicolon: ';',
+  Quote: "'",
+  Comma: ',',
+  Period: '.',
+  Slash: '/',
+  Backslash: '\\',
+  Space: ' ',
+  Backspace: 'Backspace',
+}
+
+const SHIFT_CODE_TO_CHAR: Record<string, string> = {
+  Digit1: '!',
+  Digit2: '@',
+  Digit3: '#',
+  Digit4: '$',
+  Digit5: '%',
+  Digit6: '^',
+  Digit7: '&',
+  Digit8: '*',
+  Digit9: '(',
+  Digit0: ')',
+  Minus: '_',
+  Equal: '+',
+  BracketLeft: '{',
+  BracketRight: '}',
+  Semicolon: ':',
+  Quote: '"',
+  Comma: '<',
+  Period: '>',
+  Slash: '?',
+  Backslash: '|',
+}
+
+const CHAR_TO_CODE: Record<string, string> = {}
+for (const [code, char] of Object.entries(CODE_TO_CHAR)) {
+  CHAR_TO_CODE[char] = code
+  if (code.startsWith('Key')) {
+    CHAR_TO_CODE[char.toUpperCase()] = code
+  }
+}
+for (const [code, char] of Object.entries(SHIFT_CODE_TO_CHAR)) {
+  CHAR_TO_CODE[char] = code
+}
+
+function charToCode(char: string) {
+  return CHAR_TO_CODE[char] ?? ''
+}
+
+function getSelectedText() {
+  return window.getSelection().toString().trim()
+}
 
 export function useWindowClick(cb: (e: PointerEvent) => void) {
   const add = () => {
@@ -19,6 +80,8 @@ export function useWindowClick(cb: (e: PointerEvent) => void) {
 }
 
 export function useEventListener(type: string, listener: EventListenerOrEventListenerObject) {
+  const settingStore = useSettingStore()
+
   const invokeListener = (event: KeyboardEvent) => {
     if (typeof listener === 'function') {
       return (listener as EventListener)(event)
@@ -45,13 +108,14 @@ export function useEventListener(type: string, listener: EventListenerOrEventLis
       }
     }
 
-    if (isMobile() && type === 'keydown') {
+    if (settingStore.useInputMode || (isMobile() && type === 'keydown')) {
       const ensureMobileInput = () => {
         let input = document.querySelector('#typing-listener') as HTMLInputElement | null
         if (!input) {
           input = document.createElement('input')
           input.id = 'typing-listener'
           input.type = 'text'
+          input.autofocus = true
           input.autocomplete = 'off'
           input.autocapitalize = 'off'
           input.autocorrect = false
@@ -60,28 +124,27 @@ export function useEventListener(type: string, listener: EventListenerOrEventLis
           input.setAttribute('aria-hidden', 'true')
           Object.assign(input.style, {
             position: 'fixed',
+            top: '0',
+            left: '599px',
             opacity: '0',
             pointerEvents: 'none',
             width: '1px',
             height: '1px',
-            top: '0',
-            left: '-9999px',
             zIndex: '-1',
+            // left: '-9999px',
           })
         }
         if (!input.parentNode) {
           document.body.appendChild(input)
         }
+        setTimeout(() => {
+          input.focus()
+        }, 100)
         return input
       }
 
       const hiddenInput = ensureMobileInput()
       let isComposing = false
-      const ignoredKeys = new Set<string>()
-      const markIgnore = (key: string) => {
-        ignoredKeys.add(key)
-        window.setTimeout(() => ignoredKeys.delete(key), 150)
-      }
 
       const createSyntheticEvent = (payload: { key: string; code?: string; keyCode: number }) => {
         const base = {
@@ -104,7 +167,6 @@ export function useEventListener(type: string, listener: EventListenerOrEventLis
       }
 
       const dispatchSyntheticKey = (payload: { key: string; code?: string; keyCode: number }) => {
-        markIgnore(payload.key)
         invokeListener(createSyntheticEvent(payload))
       }
 
@@ -115,71 +177,68 @@ export function useEventListener(type: string, listener: EventListenerOrEventLis
       const handleCompositionEnd = (event: CompositionEvent) => {
         isComposing = false
         if (!event.data) {
-          hiddenInput.value = ''
+          hiddenInput.value = ' '
           return
         }
         for (const char of event.data) {
           const keyCode = char === ' ' ? 32 : char.toUpperCase().charCodeAt(0)
           dispatchSyntheticKey({
             key: char,
-            code: char === ' ' ? 'Space' : undefined,
+            code: charToCode(char),
             keyCode,
           })
         }
-        hiddenInput.value = ''
+        hiddenInput.value = ' '
       }
 
       const handleInput = (event: InputEvent) => {
-        if (isComposing) return
+        if (isComposing) return Toast.warning('请切换到英文输入')
         const target = event.target as HTMLInputElement | null
+        if (!target) return
         const value = target?.value ?? ''
 
         if (event.inputType === 'deleteContentBackward') {
           dispatchSyntheticKey({ key: 'Backspace', code: 'Backspace', keyCode: 8 })
-          if (target) target.value = ''
+          target.value = ' '
           return
         }
 
         const char = value.slice(-1) || (event as any).data?.slice(-1)
         if (!char) {
-          if (target) target.value = ''
+          target.value = ' '
           return
         }
 
         const keyCode = char === ' ' ? 32 : char.toUpperCase().charCodeAt(0)
         dispatchSyntheticKey({
           key: char,
-          code: char === ' ' ? 'Space' : undefined,
+          code: charToCode(char),
           keyCode,
         })
 
         window.setTimeout(() => {
-          if (target) target.value = ''
+          if (target) {
+            if (target.value.length > 1) {
+              target.value = target.value.slice(0, -1)
+            }
+          }
         }, 0)
-      }
-
-      const shouldFocusInput = (target: HTMLElement | null) => {
-        if (!target) return false
-        if (!window.location.pathname.includes('/practice')) return false
-        const typingWord = target.closest('.typing-word')
-        if (!typingWord) return false
-        if (target.closest('.sentence') || target.closest('.phrase')) return false
-        if (target.classList?.contains('flex') && target.querySelector('.phrase')) return false
-        return true
       }
 
       const handleFocusRequest = (event: MouseEvent | TouchEvent) => {
         const target = event.target as HTMLElement | null
-        if (!shouldFocusInput(target)) return
-        window.setTimeout(() => hiddenInput.focus(), 60)
+        if (!target) return
+        if (!window.location.pathname.includes('/practice')) return
+        const typingWord = target.closest('#PracticeArea')
+        if (!typingWord) return
+        if (!getSelectedText()) {
+          window.setTimeout(() => hiddenInput.focus(), 60)
+        }
       }
 
-      const windowListener = (event: KeyboardEvent) => {
-        if (ignoredKeys.has(event.key)) {
-          ignoredKeys.delete(event.key)
-          return
-        }
-        invokeListener(event)
+      const windowListener = (e: KeyboardEvent) => {
+        if (e.code in CODE_TO_CHAR && !e.ctrlKey && !e.metaKey) return
+        invokeListener(e)
       }
 
       hiddenInput.addEventListener('compositionstart', handleCompositionStart)
@@ -200,9 +259,7 @@ export function useEventListener(type: string, listener: EventListenerOrEventLis
       window.addEventListener(type, windowListener)
       registerCleanup(() => window.removeEventListener(type, windowListener))
 
-      registerCleanup(() => {
-        hiddenInput.value = ''
-      })
+      registerCleanup(() => hiddenInput.remove())
     } else {
       const windowListener = (event: Event) => invokeListener(event as KeyboardEvent)
       window.addEventListener(type, windowListener)
@@ -254,14 +311,12 @@ export function getShortcutKey(e: KeyboardEvent) {
 }
 
 export function useStartKeyboardEventListener() {
-  const runtimeStore = useRuntimeStore()
   const settingStore = useSettingStore()
 
   useEventListener('keydown', (e: KeyboardEvent) => {
     //解决无法复制、全选的问题
     if ((e.ctrlKey || e.metaKey) && ['KeyC', 'KeyA', 'KeyD'].includes(e.code)) return
-    if (window?.disableEventListener) return
-    if (!runtimeStore.disableEventListener) {
+    if (!window?.disableEventListener) {
       // 检查当前单词是否包含空格，如果包含，则空格键应该被视为输入
       if (e.code === 'Space') {
         // 获取当前正在输入的单词信息
@@ -337,7 +392,7 @@ export function useStartKeyboardEventListener() {
     }
   })
   useEventListener('keyup', (e: KeyboardEvent) => {
-    if (!runtimeStore.disableEventListener) {
+    if (!window?.disableEventListener) {
       emitter.emit(EventKey.keyup, e)
     }
   })
@@ -361,8 +416,17 @@ export function useOnKeyboardEventListener(onKeyDown: (e: KeyboardEvent) => void
 
 //因为如果用useStartKeyboardEventListener局部变量控制，当出现多个hooks时就不行了，所以用全局变量来控制
 export function useDisableEventListener(watchVal: any) {
-  const runtimeStore = useRuntimeStore()
   watch(watchVal, (n: any) => {
-    runtimeStore.disableEventListener = n
+    window.disableEventListener = n
+    let input = document.querySelector('#typing-listener') as HTMLInputElement | null
+    if (input) {
+      setTimeout(()=>{
+        if (n) {
+          input.blur()
+        } else {
+          input.focus()
+        }
+      },100)
+    }
   })
 }

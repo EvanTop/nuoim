@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, useAttrs, watch, computed } from 'vue'
+import { ref, useAttrs, watch, computed, onUnmounted } from 'vue'
 import Close from './icon/Close.vue'
 
 const props = defineProps({
@@ -43,6 +43,10 @@ watch(
     window.disableEventListener = n
   }
 )
+
+onUnmounted(() => {
+  window.disableEventListener = false
+})
 
 const inputType = computed(() => {
   if (props.type === 'password') {

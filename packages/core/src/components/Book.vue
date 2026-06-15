@@ -37,7 +37,7 @@ const coverSrc = $computed(() => {
 </script>
 
 <template>
-  <div :id="item?.id" v-if="!isAdd">
+  <div :id="`dict-${item?.id}`" v-if="!isAdd">
     <div class="book overflow-hidden relative">
       <img class="absolute top-0 left-0 w-full object-cover" v-if="item?.cover" :src="coverSrc" alt="" />
       <div class="text-base mt-1" v-else>{{ item?.name }}</div>

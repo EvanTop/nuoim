@@ -9,7 +9,7 @@ defineProps<{
 
 <template>
   <div class="flex justify-center relative" :class="!settingStore.showToolbar && 'footer-hide'">
-    <div class="wrap">
+    <div class="wrap" id="PracticeArea">
       <slot name="practice"></slot>
     </div>
     <div

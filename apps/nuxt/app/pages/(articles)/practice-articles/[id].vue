@@ -200,7 +200,7 @@ async function unmount() {
   document.removeEventListener('visibilitychange', onvisibilitychange)
 
   console.log('onUnmounted')
-  runtimeStore.disableEventListener = false
+  window.disableEventListener = false
   const cache = await getPracticeArticleCacheLocal()
   //如果有缓存，则更新花费的时间；因为用户不输入不会保存数据
   if (cache) {

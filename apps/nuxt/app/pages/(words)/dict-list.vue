@@ -78,7 +78,7 @@ const searchList = computed<any[]>(() => {
 
 watch(dict_list, val => {
   if (!val.length) return
-  let cet4 = val.find(v => v.id === 'cet4')
+  let cet4 = val.find(v => v.id === 1)
   if (!cet4) return
   _nextTick(async () => {
     const Shepherd = await loadJsLib('Shepherd', LIB_JS_URL.SHEPHERD)
@@ -89,7 +89,7 @@ watch(dict_list, val => {
     tour.addStep({
       id: 'step2',
       text: '选一本自己准备学习的词典',
-      attachTo: { element: '#cet4', on: 'bottom' },
+      attachTo: { element: '#dict-1', on: 'bottom' },
       buttons: [
         {
           text: `下一步（2/${TourConfig.total}）`,

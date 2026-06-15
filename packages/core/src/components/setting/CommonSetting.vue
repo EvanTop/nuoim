@@ -20,6 +20,13 @@ const simpleWords = $computed({
 
 <template>
   <div>
+    <SettingItem
+      title="输入框模式"
+      desc="开启后，练习时将生成一个隐藏的输入框用于接收键盘事件，如果无法输入/输入异常请关闭此项，修改后请刷新页面"
+    >
+      <Switch v-model="settingStore.useInputMode" />
+    </SettingItem>
+
     <SettingItem :title="$t('ignore_case')" desc="开启后，输入时不区分大小写，如输入“hello”和“Hello”都会被认为是正确的">
       <Switch v-model="settingStore.ignoreCase" />
     </SettingItem>
@@ -43,7 +50,6 @@ const simpleWords = $computed({
         :autosize="{ minRows: 6, maxRows: 10 }"
       />
     </SettingItem>
-
   </div>
 </template>
 

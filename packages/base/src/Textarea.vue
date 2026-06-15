@@ -22,7 +22,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, computed, nextTick } from 'vue'
+import { ref, watch, computed, nextTick, onUnmounted } from 'vue'
 
 const props = defineProps<{
   modelValue: string
@@ -89,6 +89,11 @@ watch(
   },
   { immediate: true }
 )
+
+onUnmounted(() => {
+  window.disableEventListener = false
+})
+
 </script>
 <style scoped lang="scss">
 .disabled {
