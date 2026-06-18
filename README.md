@@ -1,133 +1,112 @@
-<h1 align=center>
-  <img src="https://github.com/user-attachments/assets/9d626e0f-0601-4640-8981-ad66d8ac4853" alt="TypeWords" style="width: 500px;"/>
-</h1>
+# Nuo.im
 
 <p align="center">
-  <a href="/README.md">English</a> |
-  <a href="/docs/README.es.md">Español</a> |
-  <a href="/docs/README.de.md">Deutsch</a> |
-  <a href="/docs/README.fr.md">Français</a> |
-  <a href="/docs/README.pt.md">Português</a> |
-  <a href="/docs/README.ru.md">Русский</a> |
-  <a href="/docs/README.uk.md">Українська</a> |
-  <a href="/docs/README.ja.md">日本語</a> |
-  <a href="/docs/README.ko.md">한국인</a> |
-  <a href="/docs/README.th.md">ไทย</a> |
-  <a href="/docs/README.vi.md">Tiếng Việt</a> |
-  <a href="/docs/README.id.md">Bahasa Indonesia</a> |
-  <a href="/docs/README.zh-TW.md">繁體中文</a> |
-  <a href="/docs/README.zh-CN.md">简体中文</a> 
+  <b>多端单词学习工具 — 打字即记忆，高效学英语</b>
 </p>
 
 <p align="center">
-  <b>Learn English, one keystroke at a time; smarter memorization, more efficient learning - an open-source word and article practice tool</b>
+  <a href="https://nuo.im">在线体验</a>
 </p>
 
-## Online Access
+## 简介
 
-<https://typewords.cc>
+Nuo.im 是基于 [TypeWords](https://github.com/zyronon/TypeWords) 二次开发的多端单词学习工具，支持 Web、VSCode 扩展和小程序多端同步。通过「跟打 + 听写 + 自测 + 默写」多种练习模式，结合智能记忆曲线算法（FSRS），帮助用户高效记忆单词和文章。
 
-<img width="1920" height="1440" alt="practice words" src="/apps/nuxt/public/imgs/words.png" />
-<img width="1920" height="1440" alt="practice articles" src="/apps/nuxt/public/imgs/articles.png" />
+## 在线地址
 
-## Features
+<https://nuo.im>
 
-### Word Practice
+## 技术栈
 
-- Practice modes: Follow-along / Dictation / Self-test / Spelling from memory
-- Smart mode: Automatically calculates learning words based on memory curves, deepening memory through dictation
-- Free mode: No restrictions, plan your own learning
-- Provides phonetics, pronunciation (American/British), example sentences, phrases, synonyms, root words, etymology, error statistics, and more
+| 类别 | 技术 |
+|------|------|
+| 框架 | Nuxt 3 / Vue 3 |
+| 语言 | TypeScript |
+| CSS | UnoCSS / SCSS |
+| 状态管理 | Pinia |
+| 国际化 | @nuxtjs/i18n / vue-i18n |
+| 包管理 | pnpm workspace (monorepo) |
+| VSCode 扩展 | Vite + Vue 3 |
+| 部署 | EdgeOne Pages |
 
-### Article Memorization
+## 项目结构
 
-- Built-in classic textbooks; you can also add or import articles with one-click translation and bilingual comparison
-- Follow-along + dictation dual modes, sentence-by-sentence input with automatic pronunciation for more efficient memorization
-- Supports listening while writing from memory to reinforce learning
-
-### Favorites, Wrong Words, Mastered
-
-- Words typed incorrectly while learning are automatically added to your wrong word book for later review
-- Actively add words to mastered to automatically skip them in future sessions
-- Add words to favorites for consolidation and review
-
-### Highly Customizable
-
-- Rich keyboard sound effects
-- Customizable shortcuts
-- Highly configurable settings
-
-### Clean and Efficient
-
-- Clean design, modern UI, ad-free
-- Refreshing interface, simple operation
-- No forced subscription to any platform
-
-### Vocabulary Library
-
-Built-in commonly used vocabulary including CET-4, CET-6, GMAT, GRE, IELTS, SAT, TOEFL, Graduate English, TEM-4, TEM-8, and more.
-Designed to meet most users' vocabulary learning needs. Community contributions of additional vocabulary are welcome.
-
-## Running the Project
-
-#### Note: This project can run standalone with data saved locally. Manual backup is required when switching devices; this does not affect normal usage.
-
-### Option 1: Running from Source
-
-This project is built with `Nuxt` and requires a Node.js environment.
-
-1. Install NodeJS, refer to the [official documentation](https://nodejs.org/en/download)
-2. The project is large. It's recommended to use `git clone --depth 1 https://github.com/zyronon/TypeWords.git` to clone only the latest commit. GitHub's Download ZIP feature will not work properly.
-3. In the project root directory, open a terminal and run `pnpm install` to download dependencies.
-4. Run `pnpm run dev` to start the project. The default address is [`http://localhost:5567`](http://localhost:5567)
-5. Open [`http://localhost:5567`](http://localhost:5567) in your browser to access the project.
-6. Run `pnpm run generate` to build the project files.
-
-### Option 2: Using Docker
-
-The easiest way to run TypeWords is using Docker:
-
-```bash
-# Pull the image from Docker Hub
-docker pull zyronon/typewords:latest
-
-# Run the container
-docker run -d -p 3000:80 --name typewords zyronon/typewords:latest
+```
+nuo.im/
+├── apps/
+│   ├── nuxt/          # 主站 (nuo.im)
+│   └── vscode-web/    # VSCode Web 扩展
+├── packages/
+│   ├── core/          # 核心组件与逻辑
+│   ├── base/          # 基础工具
+│   └── libs/          # 公共库
+├── pnpm-workspace.yaml
+└── package.json
 ```
 
-Then open [`http://localhost:3000`](http://localhost:3000) in your browser to access the project.
+## 特性
 
-Or use Docker Compose:
+### 单词练习
+
+- 练习模式: 跟打 / 听写 / 自测 / 默写
+- 智能模式: 基于 FSRS 记忆曲线自动安排学习计划
+- 自由模式: 无限制自主规划
+- 详细单词信息: 音标、发音（美式/英式）、例句、短语、同义词、词根词源、错误统计
+
+### 多词典支持
+
+- 内置多种词典（四级/六级/考研/雅思/托福/GRE 等）
+- 支持自定义词典导入
+
+### 多语言界面
+
+- 支持 14 种语言: 简体中文、繁體中文、English、Deutsch、Español、Français、Português、Русский、Українська、日本語、한국어、ไทย、Tiếng Việt、Bahasa Indonesia
+
+### 暗色主题
+
+- 自适应系统主题，支持手动切换明暗模式
+
+### 数据同步
+
+- 支持 Supabase 云端同步学习进度
+
+## 本地开发
 
 ```bash
-# Start with docker-compose
-docker-compose up -d
+# 安装依赖
+pnpm install
 
-# Stop the service
-docker-compose down
+# 启动主站开发服务器
+pnpm dev
+
+# 启动 VSCode Web 开发服务器
+pnpm dev-vscode-web
+
+# 构建主站
+pnpm generate
+
+# 构建 VSCode Web
+pnpm build-vscode-web
 ```
 
-Or build and run locally:
+> 需要 Node.js >= 18
+
+## 部署
 
 ```bash
-# Build the Docker image
-docker build -t typewords .
+# 构建静态站点
+pnpm generate
 
-# Run the container
-docker run -d -p 3000:80 --name typewords typewords
+# 构建 VSCode Web
+pnpm build-vscode-web
 ```
 
-## Features and Suggestions
+构建产物位于 `apps/nuxt/dist/` 和 `apps/vscode-web/dist/`。
 
-The project is currently in early development, with new features being added continuously. If you have any suggestions or feature requests, feel free to open an `Issue`.
-If you like the design philosophy of this software, please submit a `PR`. Thank you for your support!
+## 致谢
 
-## Contributing Guide
+本项目基于 [TypeWords](https://github.com/zyronon/TypeWords) (typewords.cc) 开源项目二次开发，感谢原作者及社区贡献者的杰出工作。
 
-[Contributing Guidelines](/docs/CONTRIBUTING.md)
+## License
 
-If you're interested in this project, we welcome your contributions and will provide as much help as possible.
-
-Before contributing, please communicate with the developers to avoid code conflicts.
-
-Thank you again for your contributions!
+MIT
