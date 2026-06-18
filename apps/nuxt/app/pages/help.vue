@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { BasePage, Collapse } from '@typewords/base'
-import WeChat from '@typewords/core/components/channel-icons/WeChat.vue'
 import { APP_NAME, GITHUB, Origin } from '@typewords/core/config/env.ts'
 import ConflictNoticeText from '@typewords/core/components/dialog/ConflictNoticeText.vue'
 
@@ -89,21 +88,6 @@ useSeoMeta({
 
           <Collapse :q="$t('qa12_a')" :a="$t('qa12_q')"> </Collapse>
 
-          <div class="line"></div>
-
-          <Collapse :q="$t('qa13_a')" :a="[$t('qa13_q1'), $t('qa13_q2'), $t('qa13_q3'), $t('qa13_q4')]">
-            <div class="flex items-center">
-              {{ $t('wechat_group') }}：
-              <WeChat />
-            </div>
-            <p>
-              {{ $t('github_address') }}： <a :href="GITHUB" target="_blank">{{ GITHUB }}</a>
-            </p>
-            <div class="">
-              {{ $t('about_ticket_feedback')
-              }}<a :href="`https://v.wjx.cn/vm/ev0W7fv.aspx#`" target="_blank">https://v.wjx.cn/vm/ev0W7fv.aspx#</a>
-            </div>
-          </Collapse>
         </div>
       </div>
     </div>
