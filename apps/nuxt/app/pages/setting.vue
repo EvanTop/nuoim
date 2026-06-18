@@ -37,10 +37,8 @@ import { useRuntimeStore } from '@typewords/core/stores/runtime'
 import { useExport } from '@typewords/core/hooks/export'
 import MigrateDialog from '@typewords/core/components/dialog/MigrateDialog.vue'
 import Log from '@typewords/core/components/setting/Log.vue'
-import About from '@typewords/core/components/About.vue'
 import CommonSetting from '@typewords/core/components/setting/CommonSetting.vue'
 import FsrsSetting from '@typewords/core/components/setting/FsrsSetting.vue'
-import ArticleSetting from '@typewords/core/components/setting/ArticleSetting.vue'
 import WordSetting from '@typewords/core/components/setting/WordSetting.vue'
 import SoundSetting from '@typewords/core/components/setting/SoundSetting.vue'
 import { PRACTICE_ARTICLE_CACHE, PRACTICE_WORD_CACHE } from '@typewords/core/utils/cache'
@@ -170,7 +168,6 @@ function focusShortcutInput() {
 function getShortcutKeyName(key: string): string {
   const shortcutKeyNameMap: Record<string, string> = {
     ShowWord: t('shortcut_show_word'),
-    EditArticle: t('shortcut_edit_article'),
     Next: t('shortcut_next'),
     Previous: t('shortcut_previous'),
     Ignore: t('shortcut_ignore'),
@@ -561,6 +558,7 @@ function removeSbConfig() {
 
 <template>
   <BasePage>
+    <a href="https://nuo.im" class="home-link" title="首页"><img src="/imgs/logo/logo.png" alt="首页" class="home-icon" /><span>首页</span></a>
     <div class="setting text-md card flex flex-col" style="height: calc(100vh - 3rem)">
       <div class="page-title text-align-center">{{ $t('setting') }}</div>
       <div class="flex flex-1 overflow-hidden gap-4">
@@ -577,10 +575,6 @@ function removeSbConfig() {
             <div class="tab" :class="tabIndex === 2 && 'active'" @click="tabIndex = 2">
               <IconFluentTextUnderlineDouble20Regular />
               <span>{{ $t('word_settings') }}</span>
-            </div>
-            <div class="tab" :class="tabIndex === 3 && 'active'" @click="tabIndex = 3">
-              <IconFluentBookLetter20Regular />
-              <span>{{ $t('article_settings') }}</span>
             </div>
             <div class="tab" :class="tabIndex === 4 && 'active'" @click="tabIndex = 4">
               <IconClarityVolumeUpLine />
@@ -624,10 +618,6 @@ function removeSbConfig() {
               <span>{{ $t('update_log') }}</span>
               <!--              <div class="red-point" v-if="runtimeStore.isNew"></div>-->
             </div>
-            <div class="tab" :class="tabIndex === 9 && 'active'" @click="tabIndex = 9">
-              <IconFluentPerson20Regular />
-              <span>{{ $t('about') }}</span>
-            </div>
           </div>
         </div>
         <div class="col-line"></div>
@@ -635,7 +625,6 @@ function removeSbConfig() {
           <CommonSetting v-if="tabIndex === 0" />
           <FsrsSetting v-if="tabIndex === 1" />
           <WordSetting v-if="tabIndex === 2" />
-          <ArticleSetting v-if="tabIndex === 3" />
           <SoundSetting v-if="tabIndex === 4" />
 
           <div v-if="tabIndex === 5">
@@ -722,7 +711,7 @@ function removeSbConfig() {
                 }}</BaseButton>
               </div>
               <div
-                class="absolute top-0 left-0 w-full h-full bg-white opacity-80 cursor-not-allowed z-10 center rounded-md"
+                class="absolute top-0 left-0 w-full h-full bg-[var(--color-card-bg)] opacity-80 cursor-not-allowed z-10 center rounded-md"
                 v-if="!canSyncToServe"
               >
                 <div class="text-red">{{ $t('custom_audio_sync_disabled') }}</div>
@@ -771,10 +760,6 @@ function removeSbConfig() {
           <!--          日志-->
           <Log v-if="tabIndex === 8" />
 
-          <div v-if="tabIndex === 9" class="center flex-col">
-            <About />
-            <div class="text-md color-gray mt-10">Build {{ gitLastCommitHash }} {{ gitLastCommitTime }}</div>
-          </div>
         </div>
       </div>
     </div>
@@ -849,114 +834,181 @@ function removeSbConfig() {
 </template>
 
 <style scoped lang="scss">
-.col-line {
-  border-right: 2px solid var(--color-line);
+/* ── Layout ── */
+.setting {
+  background: var(--color-primary);
+  min-height: 100vh;
+  display: flex;
 }
 
-.setting {
-  .left {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    align-items: center;
+/* ── Left sidebar ── */
+.setting .left {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 0;
+  border-right: 1px solid var(--color-item-border);
+  background: var(--color-card-bg);
+  min-width: 180px;
+}
+.setting .left .tabs {
+  padding: 0.6rem 0.8rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  width: 100%;
+}
+.setting .left .tabs .tab {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.6rem 0.8rem;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  font-size: 0.93rem;
+  color: var(--color-font-2);
+  font-weight: 500;
+}
+.setting .left .tabs .tab svg {
+  font-size: 1.1rem;
+  flex-shrink: 0;
+  opacity: 0.6;
+}
+.setting .left .tabs .tab:hover {
+  background: var(--color-second);
+  color: var(--color-main-text);
+}
+.setting .left .tabs .tab:hover svg {
+  opacity: 1;
+}
+.setting .left .tabs .tab.active {
+  background: var(--color-fifth);
+  color: var(--color-select-bg);
+  font-weight: 600;
+}
+.setting .left .tabs .tab.active svg {
+  opacity: 1;
+  color: var(--color-select-bg);
+}
 
-    .tabs {
-      padding: 0.6rem 0;
-      display: flex;
-      flex-direction: column;
-      gap: 0.6rem;
+/* ── Right content ── */
+.setting .content {
+  flex: 1;
+  padding: 2rem 2.5rem;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.setting .content .body {
+  height: 100%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.setting .content .scroll {
+  flex: 1;
+  padding-right: 0.6rem;
+  overflow: auto;
+}
 
-      .tab {
-        @apply cursor-pointer flex items-center relative;
-        border-radius: 0.5rem;
-        @apply w-auto p-1 lg:w-40 lg:p-2;
-        gap: 0.6rem;
-        transition: all 0.5s;
+/* ── Setting rows ── */
+.setting .content .row {
+  min-height: 3rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 2rem;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--color-item-border);
+}
+.setting .content .row:last-child {
+  border-bottom: none;
+}
+.setting .content .row .main-title {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--color-main-text);
+}
+.setting .content .row .item-title {
+  font-size: 0.95rem;
+  color: var(--color-main-text);
+}
+.setting .content .row .sub-title {
+  font-size: 0.85rem;
+  color: var(--color-font-3);
+}
+.setting .content .row .wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-shrink: 0;
+}
+.setting .content .row .wrapper span {
+  color: var(--color-font-2);
+  font-size: 0.9rem;
+}
 
-        svg {
-          @apply text-lg shrink-0;
-        }
+/* ── Input ── */
+.setting .content .row .set-key input {
+  width: 10rem;
+  box-sizing: border-box;
+  height: 2rem;
+  outline: none;
+  font-size: 0.95rem;
+  border: 1px solid var(--color-input-border);
+  border-radius: 6px;
+  padding: 0 0.6rem;
+  background: var(--color-input-bg);
+  color: var(--color-input-color);
+  transition: border-color 0.2s ease;
+}
+.setting .content .row .set-key input:focus {
+  border-color: var(--color-select-bg);
+  box-shadow: 0 0 0 3px rgba(99,102,241,0.1);
+}
 
-        &:hover {
-          background: var(--color-fourth);
-        }
+/* ── Divider ── */
+.setting .content .line {
+  border-bottom: 1px solid var(--color-item-border);
+}
 
-        &.active {
-          background: var(--color-fourth);
-        }
-      }
-    }
-  }
+.col-line {
+  border-right: 1px solid var(--color-item-border);
+}
 
-  .content {
-    .row {
-      min-height: 2.6rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: calc(var(--space) * 5);
-
-      .wrapper {
-        height: 2rem;
-        flex: 1;
-        display: flex;
-        justify-content: flex-end;
-        gap: var(--space);
-
-        span {
-          text-align: right;
-          color: gray;
-        }
-
-        .set-key {
-          align-items: center;
-
-          input {
-            width: 9rem;
-            box-sizing: border-box;
-            margin-right: 0.6rem;
-            height: 1.8rem;
-            outline: none;
-            font-size: 1rem;
-            border: 1px solid gray;
-            border-radius: 0.2rem;
-            padding: 0 0.3rem;
-            background: var(--color-second);
-            color: var(--color-font-1);
-          }
-        }
-      }
-
-      .main-title {
-        font-size: 1.1rem;
-        font-weight: bold;
-      }
-
-      .item-title {
-        font-size: 1rem;
-      }
-
-      .sub-title {
-        font-size: 0.9rem;
-      }
-    }
-
-    .body {
-      height: 100%;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .scroll {
-      flex: 1;
-      padding-right: 0.6rem;
-      overflow: auto;
-    }
-
-    .line {
-      border-bottom: 1px solid #c4c3c3;
-    }
-  }
+/* ── Home link ── */
+.home-link {
+  position: fixed;
+  top: 12px;
+  left: 16px;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  text-decoration: none;
+  color: var(--color-font-2);
+  font-size: .85rem;
+  font-weight: 600;
+  opacity: 0.75;
+  transition: all 0.2s ease;
+  border-radius: 9999px;
+  padding: 6px 14px 6px 10px;
+  background: var(--color-card-bg);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--color-item-border);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+}
+.home-link:hover {
+  opacity: 1;
+  color: var(--color-main-text);
+  border-color: var(--color-fourth);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+.home-link .home-icon {
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
 }
 </style>

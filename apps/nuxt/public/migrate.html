@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>TypeWords 数据迁移（旧域名）</title>
+    <title>Nuo.im 数据迁移（旧域名）</title>
 </head>
 <body>
 <h2 id="title">等待新域名发送迁移指令...</h2>
@@ -18,7 +18,7 @@
   function loadIDBKeyval() {
     return new Promise((resolve) => {
       let script = document.createElement("script");
-      script.src = 'https://files.typewords.cc/libs/idb-keyval.js';
+      script.src = 'https://nuo.im/libs/idb-keyval.js';
       script.onload = function () {
         log("idb-keyval 加载完成");
         resolve(window.idbKeyval);
@@ -64,7 +64,7 @@
     if (event.data?.type !== 'REQUEST_MIGRATION_DATA') return;
 
     // 安全校验 origin，可选
-    // if (event.origin !== 'https://typewords.cc') return;
+    // if (event.origin !== 'https://nuo.im') return;
 
     log("收到迁移指令，开始读取数据...");
 

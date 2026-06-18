@@ -14,10 +14,6 @@ export interface SettingState {
   wordSoundSpeed: number
   wordReviewRatio: number // 单词复习比例
 
-  articleSound: boolean
-  articleAutoPlayNext: boolean
-  articleSoundVolume: number
-  articleSoundSpeed: number
 
   keyboardSound: boolean
   keyboardSoundVolume: number
@@ -36,8 +32,6 @@ export interface SettingState {
   waitTimeForChangeWord: number // 切下一个词的等待时间（自动模式）
   spaceCooldownTime: number // 空格冷却时间（手动模式，单词完成后忽略空格键的时间）
   fontSize: {
-    articleForeignFontSize: number
-    articleTranslateFontSize: number
     wordForeignFontSize: number
     wordTranslateFontSize: number
   }

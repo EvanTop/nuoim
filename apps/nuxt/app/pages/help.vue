@@ -19,6 +19,7 @@ useSeoMeta({
 
 <template>
   <BasePage>
+    <a href="https://nuo.im" class="home-link" title="首页"><img src="/imgs/logo/logo.png" alt="首页" class="home-icon" /><span>首页</span></a>
     <div class="center">
       <div class="card-white qa w-2/3">
         <div class="font-bold text-2xl mb-6">{{ $t('faq') }}</div>
@@ -109,4 +110,74 @@ useSeoMeta({
   </BasePage>
 </template>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+/* ── Layout ── */
+.center {
+  min-height: 100vh;
+  padding: 5rem 1.5rem 3rem;
+  background: var(--color-primary);
+}
+
+/* ── FAQ Card ── */
+.card-white.qa {
+  background: var(--color-card-bg);
+  border: 1px solid var(--color-item-border);
+  border-radius: 14px;
+  padding: 2rem;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+  max-width: 800px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* ── Title ── */
+.card-white.qa > .font-bold {
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+  color: var(--color-main-text);
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--color-item-border);
+}
+
+/* ── Divider ── */
+.card-white.qa .line {
+  border-bottom: 1px solid var(--color-item-border);
+  margin: 0.25rem 0;
+}
+
+/* ── Home link ── */
+.home-link {
+  position: fixed;
+  top: 12px;
+  left: 16px;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  text-decoration: none;
+  color: var(--color-font-2);
+  font-size: .85rem;
+  font-weight: 600;
+  opacity: 0.75;
+  transition: all 0.2s ease;
+  border-radius: 9999px;
+  padding: 6px 14px 6px 10px;
+  background: var(--color-card-bg);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--color-item-border);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+}
+.home-link:hover {
+  opacity: 1;
+  color: var(--color-main-text);
+  border-color: var(--color-fourth);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+.home-link .home-icon {
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+}
+</style>

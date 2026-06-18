@@ -14,7 +14,6 @@ import 'vue-virtual-scroller/dist/vue-virtual-scroller.css'
 import { useInit } from '@typewords/core/composables/useInit.ts'
 import { useI18n } from 'vue-i18n'
 import { Supabase } from '@typewords/core/utils/supabase.ts'
-import MiniProgram from '@/components/MiniProgram.vue'
 
 const router = useRouter()
 const { toggleTheme, getTheme, setTheme } = useTheme()
@@ -53,7 +52,7 @@ const { locales, setLocale } = useI18n()
 const route = useRoute()
 
 const showIcon = $computed(() => {
-  return ['/words', '/articles', '/setting', '/help', '/doc', '/feedback'].includes(route.path)
+  return ['/words', '/setting', '/help', '/doc', '/feedback'].includes(route.path)
 })
 
 onMounted(() => {
@@ -76,16 +75,16 @@ onMounted(() => {
     <div class="aside space"></div>
     <div class="aside anim fixed">
       <div class="top" :class="!expand && 'hidden-span'">
-        <Logo v-if="expand" />
+        <Logo v-if="expand && $route.path !== '/words'" />
+        <a href="https://nuo.im" class="row">
+          <img src="/imgs/logo/logo.png" class="home-logo-icon" alt="首页" />
+          <span>首页</span>
+        </a>
         <NuxtLink to="/words" class="row">
           <IconFluentTextUnderlineDouble20Regular />
           <span>{{ $t('words') }}</span>
         </NuxtLink>
-        <NuxtLink id="article" to="/articles" class="row">
-          <IconFluentBookLetter20Regular />
-          <span>{{ $t('articles') }}</span>
-        </NuxtLink>
-        <NuxtLink to="/setting" class="row">
+                <NuxtLink to="/setting" class="row">
           <IconFluentSettings20Regular />
           <span>{{ $t('setting') }}</span>
           <div
@@ -130,11 +129,7 @@ onMounted(() => {
           <IconFluentTextUnderlineDouble20Regular />
           <span>{{ $t('words') }}</span>
         </div>
-        <div class="nav-item" @click="router.push('/articles')" :class="{ active: route.path?.includes('/articles') }">
-          <IconFluentBookLetter20Regular />
-          <span>{{ $t('articles') }}</span>
-        </div>
-        <div class="nav-item" @click="router.push('/setting')" :class="{ active: route.path === '/setting' }">
+                <div class="nav-item" @click="router.push('/setting')" :class="{ active: route.path === '/setting' }">
           <IconFluentSettings20Regular />
           <span>{{ $t('setting') }}</span>
           <div class="red-point" v-if="runtimeStore.isNew || runtimeStore.isError"></div>
@@ -162,7 +157,6 @@ onMounted(() => {
       <router-view></router-view>
 
       <div class="absolute right-4 top-4 flex z-1 gap-2" v-if="showIcon">
-        <MiniProgram v-if="settingStore.load && !settingStore.first" />
 
         <div class="relative group">
           <BaseIcon>
@@ -356,5 +350,11 @@ onMounted(() => {
   .mobile-top-nav {
     display: none;
   }
+}
+
+.home-logo-icon {
+  width: 1.125rem;
+  height: 1.125rem;
+  flex-shrink: 0;
 }
 </style>

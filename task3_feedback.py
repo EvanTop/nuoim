@@ -1,0 +1,41 @@
+#!/usr/bin/env python3
+"""Task 3: Modify feedback.vue page."""
+
+import os
+
+BASE = '/www/wwwroot/nuo.im'
+feedback_path = os.path.join(BASE, 'apps/nuxt/app/pages/feedback.vue')
+
+new_content = '''<script setup lang="ts">
+useSeoMeta({
+  title: 'NUO.IM 反馈群',
+  description: 'NUO.IM 反馈群',
+  ogTitle: 'NUO.IM 反馈群',
+  ogDescription: 'NUO.IM 反馈群',
+})
+</script>
+
+<template>
+  <div class="center">
+    <h1 style="text-align:center;margin-top:40px;">NUO.IM 反馈群</h1>
+    <div style="text-align:center;margin-top:20px;">
+      <img src="/imgs/feedback-group-qr.png" alt="NUO.IM 反馈群二维码" style="max-width:300px;" />
+    </div>
+  </div>
+</template>
+
+<style scoped lang="scss">
+.center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+}
+</style>
+'''
+
+with open(feedback_path, 'w') as f:
+    f.write(new_content)
+
+print(f"[feedback.vue] Updated successfully at {feedback_path}")

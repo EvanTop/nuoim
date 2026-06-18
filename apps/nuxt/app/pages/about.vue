@@ -28,4 +28,14 @@ useSeoMeta({
   </BasePage>
 </template>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+.center {
+  min-height: calc(100vh - 1.2rem);
+  display: flex;
+  flex-direction: column;
+}
+
+.card-white {
+  flex: 1;
+}
+</style>

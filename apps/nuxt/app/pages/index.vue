@@ -233,7 +233,7 @@ useSeoMeta({
   ogDescription: () => seoDesc,
   twitterTitle: () => seoTitle,
   twitterDescription: () => seoDesc,
-  ogUrl: 'https://typewords.cc/',
+  ogUrl: 'https://nuo.im/',
 })
 
 const i18nLocaleMap: Record<string, string> = {
@@ -246,24 +246,22 @@ useHead({
     ...Object.entries(i18nLocaleMap).map(([code, hreflang]) => ({
       rel: 'alternate',
       hreflang,
-      href: 'https://typewords.cc/',
+      href: 'https://nuo.im/',
     })),
-    { rel: 'alternate', hreflang: 'x-default', href: 'https://typewords.cc/' },
+    { rel: 'alternate', hreflang: 'x-default', href: 'https://nuo.im/' },
   ],
 })
 </script>
 
 <template>
-  <div class="hw min-h-screen overflow-x-hidden font-sans" :class="theme" id="wrapper">
+  <div class="hw overflow-x-hidden font-sans" :class="theme" id="wrapper">
     <!-- NAV -->
     <header class="sticky top-0 z-100 backdrop-blur-md border-b border-[var(--hw-border)] bg-[var(--hw-bg-nav)]">
       <div class="max-w-[1200px] mx-auto px-4 sm:px-8 h-15 flex items-center gap-8">
         <!-- Logo -->
-        <div
-          class="text-[1.1rem] font-semibold shrink-0 bg-gradient-to-r from-[#bd34fe] to-[#41d1ff] bg-clip-text text-transparent [-webkit-background-clip:text] [-webkit-text-fill-color:transparent]"
-        >
-          {{ APP_NAME }}
-        </div>
+        <NuxtLink to="/" class="shrink-0 no-underline">
+          <img src="/imgs/logo/logo.png" :alt="APP_NAME" class="h-9 w-auto" />
+        </NuxtLink>
         <!-- Desktop nav links -->
         <nav class="hidden md:flex gap-7">
           <NuxtLink
@@ -271,11 +269,7 @@ useHead({
             class="font-medium text-[var(--hw-text-2)] no-underline hover:text-[var(--hw-text)] transition-colors duration-150"
             >{{ $t('nav_words') }}</NuxtLink
           >
-          <NuxtLink
-            to="/articles"
-            class="text-[.88rem] font-medium text-[var(--hw-text-2)] no-underline hover:text-[var(--hw-text)] transition-colors duration-150"
-            >{{ $t('nav_articles') }}</NuxtLink
-          >
+
           <NuxtLink
             to="/doc"
             class="text-[.88rem] font-medium text-[var(--hw-text-2)] no-underline hover:text-[var(--hw-text)] transition-colors duration-150"
@@ -316,19 +310,6 @@ useHead({
             <IconFluentWeatherMoon16Regular v-if="theme === 'light'" />
             <IconFluentWeatherSunny16Regular v-else />
           </BaseIcon>
-          <!-- GitHub -->
-          <a
-            class="flex center gap-1 text-[var(--hw-text-2)] no-underline"
-            :href="GITHUB"
-            target="_blank"
-            aria-label="Github project address"
-          >
-            <BaseIcon title="Github" noBg>
-              <IconSimpleIconsGithub />
-            </BaseIcon>
-            <span class="text-xl">8K</span>
-          </a>
-          <!-- Mobile menu button -->
           <button
             class="flex md:hidden items-center justify-center w-8 h-8 rounded-lg bg-transparent text-[var(--hw-text-2)] cursor-pointer"
             @click="mobileMenuOpen = !mobileMenuOpen"
@@ -343,7 +324,7 @@ useHead({
         class="md:hidden border-t border-[var(--hw-border)] bg-[var(--hw-bg-card)] px-4 py-3 flex flex-col gap-3 text-lg"
       >
         <NuxtLink to="/words" class="font-medium text-[var(--hw-text-2)] no-underline py-1" @click="mobileMenuOpen = false">{{ $t('nav_words') }}</NuxtLink>
-        <NuxtLink to="/articles" class="font-medium text-[var(--hw-text-2)] no-underline py-1" @click="mobileMenuOpen = false">{{ $t('nav_articles') }}</NuxtLink>
+
         <NuxtLink to="/doc" class="font-medium text-[var(--hw-text-2)] no-underline py-1" @click="mobileMenuOpen = false">{{ $t('nav_resources') }}</NuxtLink>
         <NuxtLink to="/help" class="font-medium text-[var(--hw-text-2)] no-underline py-1" @click="mobileMenuOpen = false">{{ $t('nav_help') }}</NuxtLink>
       </div>
@@ -351,7 +332,7 @@ useHead({
 
     <main>
       <!-- ══════════════════ HERO ══════════════════ -->
-      <section class="relative overflow-hidden px-4 sm:px-8 py-14 sm:py-18 min-h-[92vh] flex items-center">
+      <section class="relative overflow-hidden px-4 sm:px-8 py-6 sm:py-8 min-h-[58vh] flex items-center bg-dot-grid">
         <!-- Gradient mesh background -->
         <div class="absolute inset-0 pointer-events-none overflow-hidden">
           <div
@@ -374,19 +355,6 @@ useHead({
           <!-- ── Left: 文字区 ── -->
           <div class="flex-1 text-center lg:text-left">
 
-            <!-- Social proof badge -->
-            <div class="flex justify-center lg:justify-start mb-5">
-              <a
-                :href="GITHUB"
-                target="_blank"
-                class="inline-flex items-center gap-2 text-[1rem] font-semibold text-[#7c3aed] no-underline px-3.5 py-1.5 rounded-full border border-[rgba(124,58,237,.3)] bg-[rgba(124,58,237,.06)] hover:bg-[rgba(124,58,237,.12)] transition-all duration-150 cursor-pointer"
-              >
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" class="shrink-0">
-                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                </svg>
-                8k+ GitHub Stars · {{ $t('hero_badge') }}
-              </a>
-            </div>
 
             <!-- Title -->
             <h1
@@ -421,57 +389,27 @@ useHead({
               <div class="flex items-center gap-1.5 text-[.85rem] text-[var(--hw-text-2)]">
                 <span class="w-1.5 h-1.5 rounded-full bg-[#059669] shrink-0 opacity-80"></span>{{ $t('hero_perk_offline') }}
               </div>
-              <div class="flex items-center gap-1.5 text-[.85rem] text-[var(--hw-text-2)]">
-                <span class="w-1.5 h-1.5 rounded-full bg-[#d97706] shrink-0 opacity-80"></span>{{ $t('hero_perk_platforms') }}
-              </div>
             </div>
 
             <!-- 手机端不支持提示 Banner -->
             <div class="block sm:hidden mb-3">
-              <div class="flex items-center gap-3 bg-[rgba(234,179,8,.08)] border border-[rgba(234,179,8,.35)] text-[#92400e] rounded-xl px-4 py-3 leading-[1.6] text-left">
+              <div class="flex items-center gap-3 bg-[#F7CB46] bg-opacity-20 border-2 border-[#00000033] text-[#000000] dark:text-[#FFFDF5] px-4 py-3 leading-[1.6] text-left">
                 <span class="text-[.84rem]">{{ $t('mobile_not_optimized') }}</span>
-              </div>
-            </div>
-
-             <div class="mini-qr-card w-full box-border mb-3 flex sm:hidden">
-              <NuxtImg src="/imgs/mini.png" :alt="$t('mini_program')" class="w-24 h-24 rounded-xl shrink-0 border border-[var(--hw-border)]" />
-              <div class="flex flex-col gap-0.5 flex-1 min-w-0">
-                <div class="text-lg font-semibold text-[var(--hw-text)]">{{ $t('mini_program') }}</div>
-                <div class="text-sm text-[var(--hw-text-3)] leading-[1.5]">{{ $t('mini_program_desc') }}</div>
               </div>
             </div>
 
             <!-- CTA buttons -->
             <div class="flex gap-3 justify-center lg:justify-start flex-col sm:flex-row items-stretch sm:items-center flex-wrap">
               <button
-                class="inline-flex items-center justify-center gap-2 px-7 h-12 rounded-xl font-semibold text-[.97rem] text-white bg-gradient-to-r from-[#7c3aed] to-[#2563eb] border-none shadow-[0_4px_20px_rgba(124,58,237,.32)] cursor-pointer hover:-translate-y-0.5 hover:shadow-[0_6px_28px_rgba(124,58,237,.42)] transition-all duration-200 sm:w-auto"
+                class="inline-flex items-center justify-center gap-2 px-7 h-12 font-bold text-[.97rem] text-white bg-[#7c3aed] border-2.5 border-[#5b21b6] shadow-[3px_3px_0px_#5b21b6] cursor-pointer hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[5px_5px_0px_#5b21b6] transition-all duration-150 sm:w-auto"
                 @click="navigateTo('/words')"
               >
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="shrink-0"><polyline points="13 17 18 12 13 7"/><polyline points="6 17 11 12 6 7"/></svg>
                 {{ $t('hero_cta_start') }}
               </button>
-              <a
-                class="inline-flex items-center justify-center gap-2 px-7 h-12 rounded-xl font-semibold text-[.97rem] text-[var(--hw-text)] bg-transparent border border-solid border-[var(--hw-border)] no-underline hover:bg-[rgba(124,58,237,.06)] hover:border-[#7c3aed] hover:text-[#7c3aed] transition-all duration-200 sm:w-auto"
-                :href="GITHUB"
-                target="_blank"
-              >
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" class="shrink-0"><path d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.603-3.369-1.342-3.369-1.342-.454-1.155-1.11-1.462-1.11-1.462-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0 1 12 6.836c.85.004 1.705.114 2.504.336 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.741 0 .267.18.579.688.481C19.138 20.163 22 16.418 22 12c0-5.523-4.477-10-10-10z"/></svg>
-                {{ $t('hero_cta_github') }}
-              </a>
             </div>
 
 
-            <!-- 网站地址 -->
-            <div class="flex justify-center lg:justify-start mt-4">
-              <a
-                :href="Origin"
-                target="_blank"
-                class="inline-flex items-center gap-1.5 text-[var(--hw-text-3)] no-underline hover:text-[#7c3aed] transition-colors duration-150"
-              >
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 opacity-50"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-                {{ Origin }}
-              </a>
-            </div>
           </div>
 
           <!-- ── Right: Demo 卡片 + 小程序码 ── -->
@@ -520,7 +458,7 @@ useHead({
                   <span class="w-3 h-3 rounded-full bg-[#ff5f57]"></span>
                   <span class="w-3 h-3 rounded-full bg-[#febc2e]"></span>
                   <span class="w-3 h-3 rounded-full bg-[#28c840]"></span>
-                  <span class="ml-3 text-[.78rem] text-[var(--hw-text-3)] font-mono">TypeWords — {{ $t('nav_words') }}</span>
+                  <span class="ml-3 text-[.78rem] text-[var(--hw-text-3)] font-mono">Nuo.im — {{ $t('nav_words') }}</span>
                   <div class="ml-auto">
                     <span
                       class="text-[.68rem] px-2 py-0.5 rounded-full font-semibold transition-all duration-200"
@@ -581,423 +519,239 @@ useHead({
                 </div>
               </div>
             </div>
-
-            <!-- ── 小程序码 — 独立卡片（不再混入 CTA 按钮旁） ── -->
-            <div class="mini-qr-card w-full box-border flex">
-              <NuxtImg src="/imgs/mini.png" :alt="$t('mini_program')" class="w-24 h-24 rounded-xl shrink-0 border border-[var(--hw-border)]" />
-              <div class="flex flex-col gap-0.5 flex-1 min-w-0">
-                <div class="text-lg font-semibold text-[var(--hw-text)]">{{ $t('mini_program') }}</div>
-                <div class="text-sm text-[var(--hw-text-3)] leading-[1.5]">{{ $t('mini_program_desc') }}</div>
-              </div>
-            </div>
           </div>
         </div>
+
       </section>
 
-      <!-- ══════════════════ SHOWCASE ══════════════════ -->
-      <section class="py-20 sm:py-24 px-4 sm:px-8 bg-[var(--hw-bg-card)] border-t border-b border-[var(--hw-border)]">
-        <div class="max-w-[1100px] mx-auto flex flex-col gap-20 sm:gap-24">
-          <!-- Words practice -->
-          <div class="grid grid-cols-1 md:grid-cols-[2fr_3fr] gap-10 md:gap-16 items-center">
-            <div>
-              <div class="section-label mb-4">{{ $t('showcase_word_section_label') }}</div>
-              <h2 class="text-[clamp(1.4rem,3vw,1.8rem)] font-bold mb-3 text-[var(--hw-text)]">{{ $t('showcase_word_title') }}</h2>
-              <p class="text-[var(--hw-text-2)] text-[1rem] leading-[1.75] mb-6">
-                {{ $t('showcase_word_desc') }}
-              </p>
-              <ul class="list-none p-0 m-0 mb-7 flex flex-col gap-2.5">
-                <li class="flex items-start gap-2 text-[.95rem] text-[var(--hw-text-2)] leading-[1.6]">
-                  <span class="text-[#7c3aed] font-bold shrink-0 mt-[.05rem]">✓</span> {{ $t('showcase_word_feat1') }}
-                </li>
-                <li class="flex items-start gap-2 text-[.95rem] text-[var(--hw-text-2)] leading-[1.6]">
-                  <span class="text-[#7c3aed] font-bold shrink-0 mt-[.05rem]">✓</span> {{ $t('showcase_word_feat2') }}
-                </li>
-                <li class="flex items-start gap-2 text-[.95rem] text-[var(--hw-text-2)] leading-[1.6]">
-                  <span class="text-[#7c3aed] font-bold shrink-0 mt-[.05rem]">✓</span> {{ $t('showcase_word_feat3') }}
-                </li>
-                <li class="flex items-start gap-2 text-[.95rem] text-[var(--hw-text-2)] leading-[1.6]">
-                  <span class="text-[#7c3aed] font-bold shrink-0 mt-[.05rem]">✓</span> {{ $t('showcase_word_feat4') }}
-                </li>
-              </ul>
-              <button
-                class="inline-flex items-center justify-center px-5 h-10 rounded-lg font-semibold text-[.9rem] text-[var(--hw-text)] bg-transparent border border-solid border-[var(--hw-border)] cursor-pointer hover:border-[#7c3aed] hover:text-[#7c3aed] hover:bg-[rgba(124,58,237,.06)] transition-all duration-150"
-                @click="navigateTo('/words')"
-              >
-                {{ $t('showcase_word_cta') }}
-              </button>
-            </div>
-            <div class="rounded-2xl overflow-hidden shadow-[var(--hw-shadow-lg)] border border-[var(--hw-border)] md:order-last order-first">
-              <NuxtImg src="/imgs/words.png" class="w-full block" :alt="$t('showcase_word_section_label')" />
-            </div>
-          </div>
-          <!-- Article practice -->
-          <div class="grid grid-cols-1 md:grid-cols-[3fr_2fr] gap-10 md:gap-16 items-center">
-            <div class="rounded-2xl overflow-hidden shadow-[var(--hw-shadow-lg)] border border-[var(--hw-border)]">
-              <NuxtImg src="/imgs/articles.png" class="w-full block" :alt="$t('showcase_article_section_label')" />
-            </div>
-            <div>
-              <div class="section-label mb-4">{{ $t('showcase_article_section_label') }}</div>
-              <h2 class="text-[clamp(1.4rem,3vw,1.8rem)] font-bold mb-3 text-[var(--hw-text)]">{{ $t('showcase_article_title') }}</h2>
-              <p class="text-[var(--hw-text-2)] text-[1rem] leading-[1.75] mb-6">
-                {{ $t('showcase_article_desc') }}
-              </p>
-              <ul class="list-none p-0 m-0 mb-7 flex flex-col gap-2.5">
-                <li class="flex items-start gap-2 text-[.95rem] text-[var(--hw-text-2)] leading-[1.6]">
-                  <span class="text-[#7c3aed] font-bold shrink-0 mt-[.05rem]">✓</span> {{ $t('showcase_article_feat1') }}
-                </li>
-                <li class="flex items-start gap-2 text-[.95rem] text-[var(--hw-text-2)] leading-[1.6]">
-                  <span class="text-[#7c3aed] font-bold shrink-0 mt-[.05rem]">✓</span> {{ $t('showcase_article_feat2') }}
-                </li>
-                <li class="flex items-start gap-2 text-[.95rem] text-[var(--hw-text-2)] leading-[1.6]">
-                  <span class="text-[#7c3aed] font-bold shrink-0 mt-[.05rem]">✓</span> {{ $t('showcase_article_feat3') }}
-                </li>
-                <li class="flex items-start gap-2 text-[.95rem] text-[var(--hw-text-2)] leading-[1.6]">
-                  <span class="text-[#7c3aed] font-bold shrink-0 mt-[.05rem]">✓</span> {{ $t('showcase_article_feat4') }}
-                </li>
-              </ul>
-              <button
-                class="inline-flex items-center justify-center px-5 h-10 rounded-lg font-semibold text-[.9rem] text-[var(--hw-text)] bg-transparent border border-solid border-[var(--hw-border)] cursor-pointer hover:border-[#7c3aed] hover:text-[#7c3aed] hover:bg-[rgba(124,58,237,.06)] transition-all duration-150"
-                @click="navigateTo('/articles')"
-              >
-                {{ $t('showcase_article_cta') }}
-              </button>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- ══════════════════ STATS BAR ══════════════════ -->
-      <section class="js-stats-bar py-14 px-4 sm:px-8 bg-[var(--hw-bg-card)] border-t border-b border-[var(--hw-border)]">
-        <div class="max-w-[900px] mx-auto flex items-center justify-center flex-wrap gap-0">
-          <div v-for="(item, i) in stats" :key="i" class="flex-1 min-w-40 text-center px-6 py-4">
-            <div class="text-[clamp(2rem,4vw,3rem)] font-black leading-[1.1] mb-1.5 bg-gradient-to-r from-[#bd34fe] to-[#41d1ff] bg-clip-text text-transparent [-webkit-background-clip:text] [-webkit-text-fill-color:transparent]">
-              {{ statValues[i] }}{{ item.suffix }}
-            </div>
-            <div class="text-[.88rem] text-[var(--hw-text-3)] leading-[1.4]">{{ item.label }}</div>
-          </div>
-        </div>
-      </section>
-
-      <!-- ══════════════════ FEATURE GRID ══════════════════ -->
-      <section class="py-20 px-4 sm:px-8">
-        <div class="max-w-[1100px] mx-auto">
-          <div class="text-center mb-12">
-            <div class="section-label">{{ $t('feature_grid_section_label') }}</div>
-            <h2 class="section-h2">{{ $t('feature_grid_title') }}</h2>
-            <p class="section-desc">{{ $t('feature_grid_desc') }}</p>
-          </div>
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            <div class="feature-card">
-              <span class="text-[2rem] mb-3.5 block">🧠</span>
-              <div class="text-[1rem] font-bold text-[var(--hw-text)] mb-2">{{ $t('feature_fsrs_title') }}</div>
-              <div class="text-[.9rem] text-[var(--hw-text-2)] leading-[1.7]">{{ $t('feature_fsrs_desc') }}</div>
-            </div>
-            <div class="feature-card">
-              <span class="text-[2rem] mb-3.5 block">📚</span>
-              <div class="text-[1rem] font-bold text-[var(--hw-text)] mb-2">{{ $t('feature_vocab_title') }}</div>
-              <div class="text-[.9rem] text-[var(--hw-text-2)] leading-[1.7]">{{ $t('feature_vocab_desc') }}</div>
-            </div>
-            <div class="feature-card">
-              <span class="text-[2rem] mb-3.5 block">⌨️</span>
-              <div class="text-[1rem] font-bold text-[var(--hw-text)] mb-2">{{ $t('feature_modes_title') }}</div>
-              <div class="text-[.9rem] text-[var(--hw-text-2)] leading-[1.7]">{{ $t('feature_modes_desc') }}</div>
-            </div>
-            <div class="feature-card">
-              <span class="text-[2rem] mb-3.5 block">🆓</span>
-              <div class="text-[1rem] font-bold text-[var(--hw-text)] mb-2">{{ $t('feature_free_title') }}</div>
-              <div class="text-[.9rem] text-[var(--hw-text-2)] leading-[1.7]">{{ $t('feature_free_desc') }}</div>
-            </div>
-            <div class="feature-card">
-              <span class="text-[2rem] mb-3.5 block">⚙️</span>
-              <div class="text-[1rem] font-bold text-[var(--hw-text)] mb-2">{{ $t('feature_custom_title') }}</div>
-              <div class="text-[.9rem] text-[var(--hw-text-2)] leading-[1.7]">{{ $t('feature_custom_desc') }}</div>
-            </div>
-            <div class="feature-card">
-              <span class="text-[2rem] mb-3.5 block">☁️</span>
-              <div class="text-[1rem] font-bold text-[var(--hw-text)] mb-2">{{ $t('feature_local_title') }}</div>
-              <div class="text-[.9rem] text-[var(--hw-text-2)] leading-[1.7]">{{ $t('feature_local_desc') }}</div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- ══════════════════ SHORTCUTS ══════════════════ -->
-      <section class="py-20 px-4 sm:px-8 bg-[var(--hw-bg-card)] border-t border-b border-[var(--hw-border)]">
-        <div class="max-w-[900px] mx-auto">
-          <div class="text-center mb-12">
-            <div class="section-label">{{ $t('shortcut_section_label') }}</div>
-            <h2 class="section-h2">{{ $t('shortcut_section_title') }}</h2>
-            <p class="section-desc">{{ $t('shortcut_section_desc') }}</p>
-          </div>
-          <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-6">
-            <div class="shortcut-item">
-              <div class="flex items-center gap-1.5 flex-wrap"><kbd class="kbd-key">Tab</kbd></div>
-              <div class="text-[.88rem] text-[var(--hw-text-2)]">{{ $t('shortcut_skip_word') }}</div>
-            </div>
-            <div class="shortcut-item">
-              <div class="flex items-center gap-1.5 flex-wrap"><kbd class="kbd-key">Esc</kbd></div>
-              <div class="text-[.88rem] text-[var(--hw-text-2)]">{{ $t('shortcut_show_word_key') }}</div>
-            </div>
-            <div class="shortcut-item">
-              <div class="flex items-center gap-1.5 flex-wrap">
-                <kbd class="kbd-key">Ctrl</kbd><span class="text-[.75rem] text-[var(--hw-text-3)]">+</span><kbd class="kbd-key">R</kbd>
-              </div>
-              <div class="text-[.88rem] text-[var(--hw-text-2)]">{{ $t('shortcut_random_shuffle') }}</div>
-            </div>
-            <div class="shortcut-item">
-              <div class="flex items-center gap-1.5 flex-wrap">
-                <kbd class="kbd-key">Shift</kbd><span class="text-[.75rem] text-[var(--hw-text-3)]">+</span><kbd class="kbd-key">→</kbd>
-              </div>
-              <div class="text-[.88rem] text-[var(--hw-text-2)]">{{ $t('shortcut_skip_stage') }}</div>
-            </div>
-            <div class="shortcut-item">
-              <div class="flex items-center gap-1.5 flex-wrap"><kbd class="kbd-key">`</kbd></div>
-              <div class="text-[.88rem] text-[var(--hw-text-2)]">{{ $t('shortcut_toggle_mastered') }}</div>
-            </div>
-            <div class="shortcut-item">
-              <div class="flex items-center gap-1.5 flex-wrap">
-                <kbd class="kbd-key">Ctrl</kbd><span class="text-[.75rem] text-[var(--hw-text-3)]">+</span><kbd class="kbd-key">P</kbd>
-              </div>
-              <div class="text-[.88rem] text-[var(--hw-text-2)]">{{ $t('shortcut_play_pronunciation') }}</div>
-            </div>
-          </div>
-          <p class="text-center text-[.85rem] text-[var(--hw-text-3)] m-0">{{ $t('shortcut_custom_hint') }}</p>
-        </div>
-      </section>
-
-      <!-- ══════════════════ HONORS ══════════════════ -->
-      <section class="py-20 px-4 sm:px-8">
-        <div class="max-w-[1100px] mx-auto">
-          <div class="text-center mb-12">
-            <div class="section-label">{{ $t('honors_section_label') }}</div>
-            <h2 class="section-h2">{{ $t('honors_section_title') }}</h2>
-            <p class="section-desc">{{ $t('honors_section_desc') }}</p>
-          </div>
-          <div class="grid grid-cols-2 md:grid-cols-4 gap-5 mb-10">
-            <div
-              v-for="item in honors"
-              :key="item.label"
-              class="bg-[var(--hw-bg-card)] border border-[var(--hw-border)] rounded-2xl p-7 text-center hover:-translate-y-1 hover:shadow-[var(--hw-shadow-md)] transition-all duration-200 cursor-default"
-            >
-              <div class="text-[2rem] mb-3">{{ item.icon }}</div>
-              <div class="text-[2rem] font-black leading-[1.1] mb-1 bg-gradient-to-r from-[#bd34fe] to-[#41d1ff] bg-clip-text text-transparent [-webkit-background-clip:text] [-webkit-text-fill-color:transparent]">{{ item.num }}</div>
-              <div class="text-[.95rem] font-bold text-[var(--hw-text)] mb-1">{{ item.label }}</div>
-              <div class="text-[.82rem] text-[var(--hw-text-3)] leading-[1.5]">{{ item.sub }}</div>
-            </div>
-          </div>
-          <div class="text-center">
-            <div class="text-[.78rem] font-semibold tracking-[.06em] uppercase text-[var(--hw-text-3)] mb-4">{{ $t('recommended_by') }}</div>
-            <div class="flex gap-3 justify-center flex-wrap">
-              <span class="inline-flex items-center gap-1.5 text-[.85rem] font-semibold text-[var(--hw-text-2)] px-4 py-2 rounded-full border border-[var(--hw-border)] bg-[var(--hw-bg-card)] hover:border-[#7c3aed] hover:text-[#7c3aed] transition-colors duration-150 cursor-default"><span>🐙</span> {{ $t('github_trending') }}</span>
-              <span class="inline-flex items-center gap-1.5 text-[.85rem] font-semibold text-[var(--hw-text-2)] px-4 py-2 rounded-full border border-[var(--hw-border)] bg-[var(--hw-bg-card)] hover:border-[#7c3aed] hover:text-[#7c3aed] transition-colors duration-150 cursor-default"><span>💬</span> {{ $t('v2ex_hot') }}</span>
-              <span class="inline-flex items-center gap-1.5 text-[.85rem] font-semibold text-[var(--hw-text-2)] px-4 py-2 rounded-full border border-[var(--hw-border)] bg-[var(--hw-bg-card)] hover:border-[#7c3aed] hover:text-[#7c3aed] transition-colors duration-150 cursor-default"><span>🏆</span> {{ $t('gitee_gvp') }}</span>
-              <span class="inline-flex items-center gap-1.5 text-[.85rem] font-semibold text-[var(--hw-text-2)] px-4 py-2 rounded-full border border-[var(--hw-border)] bg-[var(--hw-bg-card)] hover:border-[#7c3aed] hover:text-[#7c3aed] transition-colors duration-150 cursor-default"><span>📰</span> {{ $t('sspai_recommended') }}</span>
-              <span class="inline-flex items-center gap-1.5 text-[.85rem] font-semibold text-[var(--hw-text-2)] px-4 py-2 rounded-full border border-[var(--hw-border)] bg-[var(--hw-bg-card)] hover:border-[#7c3aed] hover:text-[#7c3aed] transition-colors duration-150 cursor-default"><span>⭐</span> {{ $t('gitcode_gstar') }}</span>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- ══════════════════ CTA ══════════════════ -->
-      <section class="py-20 px-4 sm:px-8 text-center bg-[var(--hw-bg-card)] border-t border-[var(--hw-border)]">
-        <div class="max-w-[600px] mx-auto">
-          <h2 class="text-[clamp(1.6rem,4vw,2.2rem)] font-black text-[var(--hw-text)] mb-3">{{ $t('cta_section_title') }}</h2>
-          <p class="text-[var(--hw-text-2)] text-[1rem] mb-8">{{ $t('cta_section_desc') }}</p>
-          <div class="flex gap-3 justify-center flex-wrap flex-col sm:flex-row items-stretch sm:items-center">
-            <button
-              class="inline-flex items-center justify-center px-8 h-12 rounded-lg font-semibold text-[1rem] text-white bg-gradient-to-r from-[#7c3aed] to-[#2563eb] border-none shadow-[0_4px_16px_rgba(124,58,237,.28)] cursor-pointer hover:-translate-y-px hover:opacity-90 transition-all duration-150 sm:w-auto"
-              @click="navigateTo('/words')"
-            >
-              {{ $t('cta_start_word') }}
-            </button>
-            <a
-              class="inline-flex items-center justify-center px-8 h-12 rounded-lg font-semibold text-[1rem] text-[var(--hw-text)] bg-transparent border border-solid border-[var(--hw-border)] no-underline hover:bg-[rgba(124,58,237,.06)] hover:border-[#7c3aed] hover:text-[#7c3aed] transition-all duration-150 sm:w-auto"
-              :href="GITHUB"
-              target="_blank"
-            >{{ $t('cta_github') }}</a>
-          </div>
-        </div>
-      </section>
-
-      <!-- ══════════════════ FAQ ══════════════════ -->
-      <section class="py-20 px-4 sm:px-8">
-        <div class="max-w-[720px] mx-auto">
-          <div class="text-center mb-12">
-            <div class="section-label">{{ $t('faq_section_label') }}</div>
-            <h2 class="section-h2">{{ $t('faq_section_title') }}</h2>
-          </div>
-          <div class="flex flex-col gap-3">
-            <div
-              v-for="(item, i) in faqs"
-              :key="i"
-              class="bg-[var(--hw-bg-card)] border border-[var(--hw-border)] rounded-lg overflow-hidden transition-colors duration-150 faq-item"
-              :class="{ 'border-[#7c3aed]': faqOpen === i }"
-            >
-              <button
-                class="w-full flex items-center justify-between px-5 py-4 bg-transparent border-none cursor-pointer text-[.97rem] font-semibold text-[var(--hw-text)] text-left gap-4 hover:bg-[rgba(124,58,237,.1)] hover:text-[#7c3aed] transition-colors duration-100"
-                @click="toggleFaq(i)"
-              >
-                <span>{{ item.q }}</span>
-                <span class="text-[1.1rem] font-light text-[var(--hw-text-3)] shrink-0 leading-none">{{ faqOpen === i ? '−' : '+' }}</span>
-              </button>
-              <div
-                class="faq-answer px-5 text-[.92rem] text-[var(--hw-text-2)] leading-[1.75]"
-                :class="{ 'faq-open': faqOpen === i }"
-              >
-                {{ item.a }}
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
     </main>
 
-    <!-- ══════════════════ FOOTER ══════════════════ -->
-    <footer class="border-t border-[var(--hw-border)] pt-14 px-4 sm:px-8 pb-0">
-      <div class="max-w-[1100px] mx-auto grid grid-cols-1 md:grid-cols-[1fr_auto] gap-12 pb-12 border-b border-[var(--hw-border)]">
-        <!-- Brand -->
-        <div class="max-w-[280px]">
-          <span class="text-[1.1rem] font-semibold bg-gradient-to-r from-[#bd34fe] to-[#41d1ff] bg-clip-text text-transparent [-webkit-background-clip:text] [-webkit-text-fill-color:transparent] block mb-2">{{ APP_NAME }}</span>
-          <p class="text-[.88rem] text-[var(--hw-text-3)] mb-5 leading-[1.6]">{{ $t('footer_tagline') }}</p>
-          <ChannelIcons type="horizontal" :share="false" />
-        </div>
-        <!-- Nav columns -->
-        <div class="flex gap-12 flex-wrap">
-          <div class="flex flex-col gap-2.5">
-            <div class="text-[.8rem] font-bold tracking-[.06em] uppercase text-[var(--hw-text-3)] mb-1">{{ $t('footer_col_features') }}</div>
-            <NuxtLink to="/words" class="footer-link">{{ $t('footer_word_practice') }}</NuxtLink>
-            <NuxtLink to="/articles" class="footer-link">{{ $t('footer_article_practice') }}</NuxtLink>
-            <NuxtLink to="/fsrs" class="footer-link">{{ $t('footer_fsrs_data') }}</NuxtLink>
-          </div>
-          <div class="flex flex-col gap-2.5">
-            <div class="text-[.8rem] font-bold tracking-[.06em] uppercase text-[var(--hw-text-3)] mb-1">{{ $t('footer_col_support') }}</div>
-            <NuxtLink to="/help" class="footer-link">{{ $t('footer_help') }}</NuxtLink>
-            <NuxtLink to="/feedback" class="footer-link">{{ $t('footer_feedback') }}</NuxtLink>
-            <NuxtLink to="/doc" class="footer-link">{{ $t('footer_resources') }}</NuxtLink>
-            <a href="/privacy-policy.html" class="footer-link">{{ $t('footer_privacy') }}</a>
-            <a href="/user-agreement.html" class="footer-link">{{ $t('footer_agreement') }}</a>
-          </div>
-          <div class="flex flex-col gap-2.5">
-            <div class="text-[.8rem] font-bold tracking-[.06em] uppercase text-[var(--hw-text-3)] mb-1">{{ $t('footer_col_project') }}</div>
-            <a :href="GITHUB" target="_blank" class="footer-link">GitHub</a>
-            <NuxtLink to="/about" class="footer-link">{{ $t('footer_about') }}</NuxtLink>
-            <NuxtLink to="/setting" class="footer-link">{{ $t('setting') }}</NuxtLink>
-          </div>
-        </div>
-      </div>
-      <!-- Footer bottom -->
-      <div class="max-w-[1100px] mx-auto py-5 flex items-center gap-4 flex-wrap">
-        <template v-if="locale === 'zh'">
-          <a
-            href="https://beian.mps.gov.cn/#/query/webSearch?code=51015602001426"
-            target="_blank"
-            class="text-[.8rem] text-[var(--hw-text-3)] no-underline hover:text-[var(--hw-text-2)] transition-colors duration-150"
-          >{{ $t('cn_limit_no1') }}</a>
-          <a
-            href="https://beian.miit.gov.cn/"
-            class="text-[.8rem] text-[var(--hw-text-3)] no-underline hover:text-[var(--hw-text-2)] transition-colors duration-150"
-            target="_blank"
-          >{{ $t('cn_limit_no2') }}</a>
-        </template>
-        <a href="mailto:zyronon@163.com" class="text-[.8rem] text-[var(--hw-text-3)] no-underline hover:text-[var(--hw-text-2)] transition-colors duration-150">{{ $t('contact_us') }}zyronon@163.com</a>
-        <span class="text-[.8rem] text-[var(--hw-text-3)] ml-auto">© 2026 {{ APP_NAME }}. All rights reserved.</span>
-      </div>
+    <!-- FOOTER -->
+    <footer class="border-t border-[var(--hw-border)] py-6 px-4 sm:px-8 text-center">
+      <span class="text-[.82rem] text-[var(--hw-text-3)]">&copy; 2026 Nuo.im All rights reserved.</span>
     </footer>
   </div>
 </template>
-
 <style scoped>
-/* CSS 变量主题令牌 */
+/* ============================================
+   Capsule Theme — nuo.im Homepage
+   Inspired by Capsule presentation template
+   ============================================ */
+
+/* ── CSS Variables ── */
 .hw {
-  --hw-bg: #f4f5f7;
-  --hw-bg-card: #ffffff;
-  --hw-bg-nav: rgba(244, 245, 247, 0.88);
-  --hw-border: #e2e4e8;
-  --hw-text: #0d0d0d;
-  --hw-text-2: #555e6e;
-  --hw-text-3: #585d66;
-  --hw-shadow-sm: 0 1px 4px rgba(0, 0, 0, 0.06);
-  --hw-shadow-md: 0 4px 20px rgba(0, 0, 0, 0.09);
-  --hw-shadow-lg: 0 12px 48px rgba(0, 0, 0, 0.11);
+  --capsule-bg: #F5F5F0;
+  --capsule-fg: #1A1A1A;
+  --capsule-outline: #1E1E1E;
+  --capsule-shadow: rgba(26, 26, 26, 0.08);
+
+  --capsule-coral: #E85D4E;
+  --capsule-lime: #C4D94E;
+  --capsule-lavender: #C5B5E0;
+  --capsule-sky: #8BB4F7;
+  --capsule-violet: #A06CE8;
+  --capsule-yellow: #F2D160;
+  --capsule-peach: #F5B895;
+  --capsule-mint: #A8E6CF;
+
+  --hw-bg: #F5F5F0;
+  --hw-bg-card: #FFFFFF;
+  --hw-bg-nav: rgba(245, 245, 240, 0.92);
+  --hw-border: #1E1E1E;
+  --hw-text: #1A1A1A;
+  --hw-text-2: #444444;
+  --hw-text-3: #777777;
+  --hw-shadow-sm: 4px 4px 0 rgba(26, 26, 26, 0.08);
+  --hw-shadow-md: 6px 6px 0 rgba(26, 26, 26, 0.08);
+  --hw-shadow-lg: 8px 8px 0 rgba(26, 26, 26, 0.08);
   background: var(--hw-bg);
+  min-height: 100vh;
   color: var(--hw-text);
-}
-.hw.dark {
-  --hw-bg: #0e1217;
-  --hw-bg-card: #171d26;
-  --hw-bg-nav: rgba(14, 18, 23, 0.92);
-  --hw-border: #2a3140;
-  --hw-text: #e8eaf0;
-  --hw-text-2: #8a93a8;
-  --hw-text-3: #72839f;
-  --hw-shadow-sm: 0 1px 4px rgba(0, 0, 0, 0.35);
-  --hw-shadow-md: 0 4px 20px rgba(0, 0, 0, 0.45);
-  --hw-shadow-lg: 0 12px 48px rgba(0, 0, 0, 0.55);
+  font-family: 'Space Grotesk', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
 
+.hw.dark {
+  --hw-bg: #1A1A1A;
+  --hw-bg-card: #242428;
+  --hw-bg-nav: rgba(26, 26, 26, 0.94);
+  --hw-border: #3A3A44;
+  --hw-text: #F0F0E8;
+  --hw-text-2: #B8B8C0;
+  --hw-text-3: #787880;
+  --hw-shadow-sm: 4px 4px 0 rgba(0, 0, 0, 0.15);
+  --hw-shadow-md: 6px 6px 0 rgba(0, 0, 0, 0.15);
+  --hw-shadow-lg: 8px 8px 0 rgba(0, 0, 0, 0.15);
+}
+
+/* ── Grain texture overlay ── */
+.hw::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.035;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 200px 200px;
+}
+.hw.dark::before {
+  opacity: 0.06;
+}
+
+/* ── Dot grid background ── */
+.bg-dot-grid::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(circle, var(--hw-border) 1px, transparent 1px);
+  background-size: 20px 20px;
+  opacity: 0.05;
+  pointer-events: none;
+}
+.hw.dark .bg-dot-grid::before {
+  opacity: 0.07;
+}
+
+/* ── Fonts ── */
 @font-face {
-  font-family: 'Garamond';
+  font-family: 'Bodoni Moda';
   font-style: italic;
   font-weight: 700;
   font-display: swap;
-  src: url(https://fonts.gstatic.com/l/font?kit=XoHg2Y_-T6Oo88RDZSQPp2sshj3I9QTcqzw&skey=509bbab0bec2784f&v=v18) format('woff2');
+  src: url(https://fonts.gstatic.com/s/bodonimoda/v26/aFT67PxzY382XsXX63LUYL6GYFcan6NJrKp-VPjfJMShrpsGFUt8oU7a8Id4tA.woff2) format('woff2');
 }
 
-/* Hero 标题艺术字体 */
 .hero-title {
-  font-family: Garamond, Georgia, 'Times New Roman', serif;
+  font-family: 'Bodoni Moda', Georgia, 'Times New Roman', serif;
   font-style: italic;
-  letter-spacing: 0.08em;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  text-transform: none;
+  line-height: 0.9;
 }
 
-/* 核心价值 pill */
+/* ── Value Pills ── */
 .value-pill {
-  @apply inline-flex items-center gap-1.5 text-[.78rem] font-bold tracking-[.03em] px-3.5 py-1.5 rounded-full border;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: .78rem;
+  font-weight: 600;
+  letter-spacing: .04em;
+  padding: 7px 18px;
+  border: 2px solid var(--capsule-outline);
+  box-shadow: 4px 4px 0 var(--capsule-shadow);
+  text-transform: uppercase;
+  border-radius: 9999px;
+  font-family: 'Space Grotesk', sans-serif;
 }
+
 .value-pill--purple {
-  @apply border-[rgba(124,58,237,.35)] text-[#7c3aed] bg-[rgba(124,58,237,.07)];
+  background: var(--capsule-lavender);
+  color: #1A1A1A;
 }
 .value-pill--blue {
-  @apply border-[rgba(37,99,235,.35)] text-[#2563eb] bg-[rgba(37,99,235,.07)];
+  background: var(--capsule-sky);
+  color: #1A1A1A;
 }
 .value-pill--green {
-  @apply border-[rgba(16,185,129,.35)] text-[#059669] bg-[rgba(16,185,129,.07)];
+  background: var(--capsule-mint);
+  color: #1A1A1A;
 }
 
-/* 区块标签胶囊 */
+.hw.dark .value-pill {
+  border-color: var(--hw-border);
+  box-shadow: 4px 4px 0 rgba(0,0,0,0.2);
+}
+
+/* ── Section Label / Pill ── */
 .section-label {
-  @apply inline-block text-[.72rem] font-bold tracking-[.07em] uppercase px-3 py-1 rounded-full bg-gradient-to-r from-[#7c3aed] to-[#2563eb] text-white mb-3;
+  display: inline-block;
+  font-size: .72rem;
+  font-weight: 600;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  padding: 5px 16px;
+  border: 2px solid var(--capsule-outline);
+  box-shadow: 4px 4px 0 var(--capsule-shadow);
+  background: var(--capsule-yellow);
+  color: #1A1A1A;
+  margin-bottom: 12px;
+  border-radius: 9999px;
 }
-/* 区块标题 h2 */
 .section-h2 {
-  @apply text-[clamp(1.5rem,3vw,2rem)] font-bold mb-2.5 text-[var(--hw-text)];
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  font-weight: 800;
+  margin-bottom: 10px;
+  color: var(--hw-text);
+  text-transform: uppercase;
+  letter-spacing: -0.01em;
 }
-/* 区块描述段落 */
 .section-desc {
-  @apply text-[var(--hw-text-2)] text-[1rem] mx-auto max-w-[520px] leading-[1.75];
+  color: var(--hw-text-2);
+  font-size: 1rem;
+  margin: 0 auto;
+  max-width: 520px;
+  line-height: 1.75;
+  font-weight: 500;
 }
-/* 特性卡片 */
+
+/* ── Feature Card ── */
 .feature-card {
-  @apply bg-[var(--hw-bg-card)] border border-[var(--hw-border)] rounded-2xl p-7 hover:-translate-y-1 hover:shadow-[var(--hw-shadow-md)] transition-all duration-200 cursor-default;
+  background: var(--hw-bg-card);
+  border: 2px solid var(--hw-border);
+  border-radius: 2rem;
+  padding: 28px;
+  box-shadow: var(--hw-shadow-md);
+  transition: all 0.15s ease;
+  cursor: default;
 }
-/* 快捷键容器 item */
+.feature-card:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 8px 8px 0 var(--capsule-shadow);
+}
+
+/* ── Shortcuts ── */
 .shortcut-item {
-  @apply bg-[var(--hw-bg)] border border-[var(--hw-border)] rounded-lg px-6 py-5 flex flex-col gap-2.5;
+  background: var(--hw-bg);
+  border: 2px solid var(--hw-border);
+  border-radius: 1.25rem;
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
-/* kbd 按键样式 */
 .kbd-key {
-  @apply inline-flex items-center justify-center min-w-8 h-7 px-2 bg-[var(--hw-bg-card)] border border-[var(--hw-border)] border-b-2 rounded text-[.78rem] font-mono font-semibold text-[var(--hw-text)] shadow-[0_1px_2px_rgba(0,0,0,.08)];
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  height: 28px;
+  padding: 0 8px;
+  background: var(--hw-bg-card);
+  border: 2px solid var(--hw-border);
+  border-radius: 9999px;
+  font-size: .78rem;
+  font-family: 'Space Grotesk', 'JetBrains Mono', monospace;
+  font-weight: 700;
+  color: var(--hw-text);
 }
-/* Footer 导航链接 */
+
+/* ── Footer ── */
 .footer-link {
-  @apply text-[.88rem] text-[var(--hw-text-2)] no-underline hover:text-[var(--hw-text)] transition-colors duration-150;
+  font-size: .88rem;
+  color: var(--hw-text-2);
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.15s;
+}
+.footer-link:hover {
+  color: var(--hw-text);
 }
 
-/* 打字光标 blink */
-.typing-cursor { opacity: 1; transition: opacity 0.1s; }
-.typing-cursor.blink { opacity: 0; }
-
-/* 打字 Demo 输错抖动 */
+/* ═══════════════ TYPING DEMO ═══════════════ */
 .demo-shake {
   animation: demo-shake 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
 }
@@ -1009,44 +763,42 @@ useHead({
   80% { transform: translateX(4px); }
 }
 
-/* Demo 卡片空闲时边框呼吸动画 */
 .demo-idle-border {
   animation: demo-border-pulse 2.4s ease-in-out infinite;
 }
 @keyframes demo-border-pulse {
   0%, 100% { border-color: var(--hw-border); }
-  50% { border-color: rgba(124, 58, 237, 0.45); }
+  50% { border-color: var(--capsule-violet); }
 }
 
-/* 点击引导文字 — 抖动 + 脉冲 */
 .demo-click-guide {
   display: inline-flex;
   align-items: center;
   gap: 8px;
   font-size: .88rem;
-  font-weight: 600;
-  color: #7c3aed;
-  background: rgba(124, 58, 237, 0.09);
-  border: 1.5px solid rgba(124, 58, 237, 0.35);
-  border-radius: 999px;
+  font-weight: 700;
+  color: var(--capsule-violet);
+  background: rgba(160, 108, 232, 0.1);
+  border: 2px solid rgba(160, 108, 232, 0.4);
+  box-shadow: 3px 3px 0 rgba(160, 108, 232, 0.2);
   padding: 8px 18px;
+  border-radius: 9999px;
   cursor: pointer;
   animation: guide-attention 1.8s ease-in-out infinite;
   backdrop-filter: blur(4px);
 }
 @keyframes guide-attention {
-  0%, 100% { transform: translateY(0) scale(1); box-shadow: 0 0 0 0 rgba(124,58,237,0); }
-  30% { transform: translateY(-3px) scale(1.03); box-shadow: 0 4px 16px rgba(124,58,237,.18); }
-  60% { transform: translateY(0) scale(1); box-shadow: 0 0 0 0 rgba(124,58,237,0); }
+  0%, 100% { transform: translateY(0) scale(1); }
+  30% { transform: translateY(-3px) scale(1.03); box-shadow: 4px 5px 0 rgba(160, 108, 232, 0.25); }
+  60% { transform: translateY(0) scale(1); box-shadow: 3px 3px 0 rgba(160, 108, 232, 0.2); }
   80% { transform: translateY(-2px) scale(1.01); }
 }
 
-/* 引导箭头弹跳 */
 .demo-bounce-arrow {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: rgba(124, 58, 237, 0.6);
+  color: rgba(160, 108, 232, 0.6);
   margin-top: 6px;
   animation: arrow-bounce 1.4s ease-in-out infinite;
 }
@@ -1055,12 +807,24 @@ useHead({
   50% { transform: translateY(5px); opacity: 1; }
 }
 
-/* 小程序码卡片 */
+/* ── Mini QR Card ── */
 .mini-qr-card {
-  @apply items-center gap-3 bg-[var(--hw-bg-card)] border border-[var(--hw-border)] rounded-xl px-4 py-3 shadow-[var(--hw-shadow-sm)] hover:border-[rgba(124,58,237,.4)] hover:shadow-[var(--hw-shadow-md)] transition-all duration-200;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--hw-bg-card);
+  border: 2px solid var(--hw-border);
+  border-radius: 1.25rem;
+  padding: 12px 16px;
+  box-shadow: var(--hw-shadow-sm);
+  transition: all 0.15s ease;
+}
+.mini-qr-card:hover {
+  border-color: var(--capsule-violet);
+  box-shadow: var(--hw-shadow-md);
 }
 
-/* FAQ 高度过渡 */
+/* ── FAQ transition ── */
 .faq-answer {
   max-height: 0;
   overflow: hidden;
@@ -1074,4 +838,8 @@ useHead({
   padding-bottom: 1.25rem;
   opacity: 1;
 }
+
+/* ── Typing cursor ── */
+.typing-cursor { opacity: 1; transition: opacity 0.1s; }
+.typing-cursor.blink { opacity: 0; }
 </style>

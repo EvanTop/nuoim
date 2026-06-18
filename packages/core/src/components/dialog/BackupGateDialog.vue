@@ -15,7 +15,7 @@ watch(model, visible => {
 })
 
 async function onBackup() {
-  await exportData('已自动备份数据', 'TypeWords数据备份.zip')
+  await exportData('已自动备份数据', 'Nuo.im数据备份.zip')
   backupTriggered = true
 }
 </script>

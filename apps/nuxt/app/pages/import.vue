@@ -14,7 +14,6 @@ import { nanoid } from 'nanoid'
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import Header from '@typewords/core/components/Header.vue'
-import EditBook from '@typewords/core/components/article/EditBook.vue'
 import Book from '@typewords/core/components/Book.vue'
 import { MessageBox } from '@typewords/core/utils/MessageBox.tsx'
 import { useI18n } from 'vue-i18n'
@@ -737,8 +736,10 @@ async function goManualArticleEditWithoutConfirm() {
 
           <div v-if="showCreateForm"
             class="border border-[var(--color-input-border)] rounded-md p-4 bg-[var(--color-card-bg)]">
-            <EditBook :is-add="true" :is-book="!isWord" submit-mode="draft" fluid @submit="handleDraftSubmit"
-              @close="showCreateForm = false" />
+            <div class="p-4 text-center text-gray-500">
+              <p>Create form has been moved.</p>
+              <button class="mt-2 btn" @click="showCreateForm = false">Close</button>
+            </div>
           </div>
 
           <div class="section-title">{{ targetLabel }}列表</div>

@@ -26,13 +26,6 @@ withDefaults(
             >{{ $t('follow_steps_to_resolve') }}
           </div>
           <ul class="m-0">
-            <li>{{ $t('try_incognito_mode') }}</li>
-            <li>
-              {{ $t('incognito_not_working')
-              }}<span class="color-link mx-1 cp" @click="jump2Feedback">{{ $t('click_here') }}</span
-              >{{ $t('feedback_or_wechat') }}<WeChat />
-            </li>
-            <li>{{ $t('incognito_working') }}</li>
             <li>{{ $t('disable_plugin_or_exclude') }}</li>
             <li>
               {{ $t('install_extension_manager') }}

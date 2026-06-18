@@ -8,7 +8,6 @@ function remove(data?: any) {
   if (data) {
     let s = cloneDeep(data)
     delete s.words
-    delete s.articles
     delete s.statistics
     return s
   }

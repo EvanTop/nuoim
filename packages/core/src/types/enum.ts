@@ -24,7 +24,6 @@ export enum Sort {
 
 export enum ShortcutKey {
   ShowWord = 'ShowWord',
-  EditArticle = 'EditArticle',
   Next = 'Next',
   Ignore = 'Ignore',
   Previous = 'Previous',

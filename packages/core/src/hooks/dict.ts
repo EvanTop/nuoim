@@ -1,4 +1,4 @@
-import type { Article, Dict, TaskWords, Word } from '../types'
+import type { Dict, TaskWords, Word } from '../types'
 import { DictType, getDefaultDict, getDefaultWord } from '../types'
 import { useBaseStore } from '../stores/base.ts'
 import { useSettingStore } from '../stores/setting.ts'
@@ -68,29 +68,6 @@ export function useWordOptions() {
   }
 }
 
-export function useArticleOptions() {
-  const store = useBaseStore()
-
-  function isArticleCollect(val: Article) {
-    return !!store.collectArticle?.articles?.find(v => v.id === val.id)
-  }
-
-  //todo 这里先收藏，再修改。收藏里面的未同步。单词也是一样的
-  function toggleArticleCollect(val: Article) {
-    let rIndex = store.collectArticle.articles.findIndex(v => v.id === val.id)
-    if (rIndex > -1) {
-      store.collectArticle.articles.splice(rIndex, 1)
-    } else {
-      store.collectArticle.articles.push(val)
-    }
-    store.collectArticle.length = store.collectArticle.articles.length
-  }
-
-  return {
-    isArticleCollect,
-    toggleArticleCollect,
-  }
-}
 
 export function getCurrentStudyWord(): TaskWords {
   const store = useBaseStore()
@@ -211,7 +188,7 @@ export function useGetDict() {
       if (!runtimeStore.editDict?.id) {
         let dictId = route.params?.id
         if (!dictId) {
-          return router.push('/articles')
+          return router.push('/')
         }
         waiting = true
       } else {
@@ -253,7 +230,7 @@ export function useGetDict() {
         }
       }
     } else {
-      router.push('/articles')
+      router.push('/')
     }
 
     waiting = false

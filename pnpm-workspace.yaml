@@ -3,3 +3,8 @@ packages:
   - apps/vscode-web
   - apps/vscode
   - packages/*
+allowBuilds:
+  '@parcel/watcher': false
+  esbuild: false
+  less: false
+  sharp: false

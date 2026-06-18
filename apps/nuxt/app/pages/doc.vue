@@ -314,6 +314,7 @@ const openLink = (url: string) => {
 
 <template>
   <BasePage>
+    <a href="https://nuo.im" class="home-link" title="首页"><img src="/imgs/logo/logo.png" alt="首页" class="home-icon" /><span>首页</span></a>
     <div class="flex flex-col items-center justify-center px-4 py-8">
       <!-- 页面标题 -->
       <div class="text-center mb-8">
@@ -385,18 +386,93 @@ const openLink = (url: string) => {
         </div>
       </div>
 
-      <!-- 页面底部 -->
-      <div class="mt-12 pt-8 border-t border-gray-200 dark:border-gray-700">
-        <div class="card-white">
-          <div class="text-xl font-bold mb-4">温馨提示</div>
-          <ul class="space-y-2 text-gray-600 dark:text-gray-300">
-            <li>所有资源均来自互联网收集，仅供学习交流使用</li>
-            <li>
-              如果链接失效，请及时<a :href="`https://v.wjx.cn/vm/ev0W7fv.aspx#`" target="_blank">告知</a>，我会尽快更新
-            </li>
-          </ul>
-        </div>
-      </div>
     </div>
   </BasePage>
 </template>
+
+<style scoped lang="scss">
+/* ── Layout ── */
+.doc-page {
+  min-height: 100vh;
+  padding: 5rem 1.5rem 3rem;
+  background: var(--color-primary);
+}
+
+/* ── Page header ── */
+.doc-page h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: -0.6px;
+  color: var(--color-main-text);
+  margin-bottom: 0.75rem;
+}
+.doc-page > div > div:first-child p {
+  font-size: 1rem;
+  color: var(--color-font-2);
+  line-height: 1.7;
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+/* ── Category filter bar ── */
+.card-white:first-of-type {
+  background: var(--color-card-bg);
+  border: 1px solid var(--color-item-border);
+  border-radius: 14px !important;
+  padding: 1rem 1.25rem !important;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+}
+
+/* ── Section headers ── */
+.mb-12 h2 {
+  font-size: 1.35rem;
+  font-weight: 700;
+  letter-spacing: -0.2px;
+  color: var(--color-main-text);
+  margin-bottom: 0.4rem;
+}
+.mb-12 > div > p {
+  font-size: 0.9rem;
+  color: var(--color-font-3);
+}
+
+/* ── Resource cards grid ── */
+.grid {
+  gap: 1rem;
+}
+
+/* ── Home link ── */
+.home-link {
+  position: fixed;
+  top: 12px;
+  left: 16px;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  text-decoration: none;
+  color: var(--color-font-2);
+  font-size: .85rem;
+  font-weight: 600;
+  opacity: 0.75;
+  transition: all 0.2s ease;
+  border-radius: 9999px;
+  padding: 6px 14px 6px 10px;
+  background: var(--color-card-bg);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--color-item-border);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+}
+.home-link:hover {
+  opacity: 1;
+  color: var(--color-main-text);
+  border-color: var(--color-fourth);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+.home-link .home-icon {
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+}
+</style>
+

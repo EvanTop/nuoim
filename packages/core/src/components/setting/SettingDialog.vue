@@ -3,7 +3,6 @@ import { defineAsyncComponent } from 'vue'
 import { BaseIcon } from '@typewords/base'
 import CommonSetting from './CommonSetting.vue'
 import WordSetting from './WordSetting.vue'
-import ArticleSetting from './ArticleSetting.vue'
 import SoundSetting from './SoundSetting.vue'
 import { useDisableEventListener } from '../../hooks/event.ts'
 
@@ -19,7 +18,7 @@ const emit = defineEmits<{
   (e: 'open'): void
 }>()
 
-let tabIndex = $ref(props.type === 'word' ? 1 : 2)
+let tabIndex = $ref(props.type === 'word' ? 1 : 0)
 let show = $ref(false)
 
 useDisableEventListener(() => show)
@@ -43,10 +42,6 @@ defineExpose({ openSoundTab })
               <IconFluentTextUnderlineDouble20Regular width="20" />
               <span>{{ $t('word_settings') }}</span>
             </div>
-            <div class="tab" :class="tabIndex === 2 && 'active'" @click="tabIndex = 2" v-if="type === 'article'">
-              <IconFluentBookLetter20Regular width="20" />
-              <span>{{ $t('article_settings') }}</span>
-            </div>
             <div class="tab" :class="tabIndex === 0 && 'active'" @click="tabIndex = 0">
               <IconFluentSettings20Regular width="20" />
               <span>{{ $t('general_settings') }}</span>
@@ -60,7 +55,6 @@ defineExpose({ openSoundTab })
         <div class="content">
           <CommonSetting v-if="tabIndex === 0" />
           <WordSetting v-if="tabIndex === 1" />
-          <ArticleSetting v-if="tabIndex === 2" />
           <SoundSetting v-if="tabIndex === 3" />
         </div>
       </div>
@@ -70,7 +64,7 @@ defineExpose({ openSoundTab })
     :title="$t('settings')"
     @click="
       show = true;
-      tabIndex = props.initialTab ?? (props.type === 'word' ? 1 : 2)
+      tabIndex = props.initialTab ?? (props.type === 'word' ? 1 : 0)
     "
   >
     <IconFluentSettings20Regular />

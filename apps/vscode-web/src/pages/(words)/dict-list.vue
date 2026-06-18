@@ -151,75 +151,90 @@ watch(dict_list, val => {
 </template>
 
 <style scoped lang="scss">
-// 移动端适配
+/* ── Home link ── */
+:global(.home-link) {
+  position: fixed;
+  top: 12px;
+  left: 16px;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  text-decoration: none;
+  color: var(--color-font-2);
+  font-size: .85rem;
+  font-weight: 600;
+  opacity: 0.75;
+  transition: all 0.2s ease;
+  border-radius: 9999px;
+  padding: 6px 14px 6px 10px;
+  background: var(--color-card-bg);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--color-item-border);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+}
+:global(.home-link):hover {
+  opacity: 1;
+  color: var(--color-main-text);
+  border-color: var(--color-fourth);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+:global(.home-link) .home-icon {
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+}
+
+/* ── Mobile ── */
 @media (max-width: 768px) {
   .dict-list-page {
     padding: 0.8rem;
     margin-bottom: 1rem;
-
-    .header-section {
-      flex-direction: column;
-      gap: 0.5rem;
-
-      .flex.flex-1.gap-4 {
-        width: 100%;
-
-        .base-input {
-          font-size: 0.9rem;
-        }
-
-        .base-button {
-          padding: 0.5rem 0.8rem;
-          font-size: 0.9rem;
-        }
-      }
-
-      .py-1.flex.flex-1.justify-end {
-        width: 100%;
-
-        .page-title {
-          font-size: 1.2rem;
-        }
-
-        .base-icon {
-          font-size: 1.2rem;
-        }
-      }
-    }
-
-    .mt-4 {
-      margin-top: 0.8rem;
-    }
+  }
+  .dict-list-page .header-section {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .dict-list-page .header-section .flex.flex-1.gap-4 {
+    width: 100%;
+  }
+  .dict-list-page .header-section .flex.flex-1.gap-4 .base-input {
+    font-size: 0.9rem;
+  }
+  .dict-list-page .header-section .flex.flex-1.gap-4 .base-button {
+    padding: 0.5rem 0.8rem;
+    font-size: 0.9rem;
+  }
+  .dict-list-page .header-section .py-1.flex.flex-1.justify-end {
+    width: 100%;
+  }
+  .dict-list-page .header-section .py-1.flex.flex-1.justify-end .page-title {
+    font-size: 1.2rem;
+  }
+  .dict-list-page .header-section .py-1.flex.flex-1.justify-end .base-icon {
+    font-size: 1.2rem;
+  }
+  .dict-list-page .mt-4 {
+    margin-top: 0.8rem;
   }
 }
 
-// 超小屏幕适配
 @media (max-width: 480px) {
   .dict-list-page {
     padding: 0.5rem;
-
-    .header-section {
-      .flex.flex-1.gap-4 {
-        .base-input {
-          font-size: 0.8rem;
-        }
-
-        .base-button {
-          padding: 0.4rem 0.6rem;
-          font-size: 0.8rem;
-        }
-      }
-
-      .py-1.flex.flex-1.justify-end {
-        .page-title {
-          font-size: 1rem;
-        }
-
-        .base-icon {
-          font-size: 1rem;
-        }
-      }
-    }
+  }
+  .dict-list-page .header-section .flex.flex-1.gap-4 .base-input {
+    font-size: 0.8rem;
+  }
+  .dict-list-page .header-section .flex.flex-1.gap-4 .base-button {
+    padding: 0.4rem 0.6rem;
+    font-size: 0.8rem;
+  }
+  .dict-list-page .header-section .py-1.flex.flex-1.justify-end .page-title {
+    font-size: 1rem;
+  }
+  .dict-list-page .header-section .py-1.flex.flex-1.justify-end .base-icon {
+    font-size: 1rem;
   }
 }
 </style>

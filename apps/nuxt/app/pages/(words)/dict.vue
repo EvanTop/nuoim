@@ -15,7 +15,6 @@ import {
 import { detail } from '@typewords/core/apis'
 import { copyOfficialDict } from '@typewords/core/apis/dict.ts'
 import { wordDelete } from '@typewords/core/apis/words.ts'
-import EditBook from '@typewords/core/components/article/EditBook.vue'
 import BaseTable from '@typewords/core/components/BaseTable.vue'
 import PracticeSettingDialog from '@typewords/core/components/word/PracticeSettingDialog.vue'
 import WordItem from '@typewords/core/components/word/WordItem.vue'
@@ -238,17 +237,12 @@ function closeWordForm() {
 let isEdit = $ref(false)
 let isAdd = $ref(false)
 let activeTab = $ref<'list' | 'edit'>('list') // 移动端标签页状态
-let _copyData: Dict | null = null // createCopy 生成的副本数据，作为 initialData 传给 EditBook
 
 const showBookDetail = computed(() => {
   return !(isAdd || isEdit)
 })
 
 function createCopy() {
-  // 生成副本数据，不写入 store。经由 initialData 传给 EditBook，确认后才写入
-  const copy = ensureCustomDictCopy(runtimeStore.editDict)
-  copy.name = runtimeStore.editDict.name + ' (副本)'
-  _copyData = copy
   isAdd = true
 }
 
@@ -304,17 +298,13 @@ async function getDetail(id) {
 function formClose() {
   if (isEdit) {
     isEdit = false
-  } else if (isAdd) {
-    _copyData = null
-    isAdd = false
+  } else if (isAdd) {    isAdd = false
   } else {
     router.back()
   }
 }
 
-function handleSubmit() {
-  _copyData = null
-  isEdit = false
+function handleSubmit() {  isEdit = false
   isAdd = false
 }
 
@@ -552,6 +542,7 @@ const editable = $computed(() => runtimeStore.editDict.custom || runtimeStore.ed
 defineRender(() => {
   return (
     <BasePage>
+      <a href="https://nuo.im" class="home-link" title="首页"><img src="/imgs/logo/logo.png" alt="首页" class="home-icon" /><span>首页</span></a>
       {showBookDetail.value ? (
         <div className="card mb-0 dict-detail-card flex flex-col">
           <div class="dict-header flex justify-between items-center relative">
@@ -752,14 +743,8 @@ defineRender(() => {
               {isAdd ? $t('create_dict') : $t('edit_dict')}
             </div>
           </div>
-          <div class="center">
-            <EditBook
-              isAdd={isAdd}
-              isBook={false}
-              initialData={_copyData}
-              onClose={formClose}
-              onSubmit={handleSubmit}
-            />
+          <div class="center p-4">
+            <p>Dictionary editing has been moved.</p>
           </div>
         </div>
       )}
@@ -896,4 +881,36 @@ defineRender(() => {
     }
   }
 }
+
+:global(.home-link) {
+  position: fixed;
+  top: 12px;
+  left: 16px;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  text-decoration: none;
+  color: #666;
+  font-size: .85rem;
+  font-weight: 600;
+  opacity: 0.7;
+  transition: opacity 0.15s;
+  border-radius: 9999px;
+  padding: 6px 14px 6px 10px;
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(8px);
+  border: 1.5px solid rgba(0, 0, 0, 0.08);
+}
+:global(.home-link):hover {
+  opacity: 1;
+  color: #1A1A1A;
+  border-color: rgba(0, 0, 0, 0.18);
+}
+:global(.home-link) .home-icon {
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+}
+
 </style>

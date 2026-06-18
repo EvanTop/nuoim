@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { _nextTick, groupBy, isMobile, loadJsLib, resourceWrap, useNav } from '@typewords/core/utils'
+import { _nextTick, groupBy, isMobile, loadJsLib, useNav } from '@typewords/core/utils'
 import { BackIcon, BaseButton, BaseIcon, BaseInput, BasePage } from '@typewords/base'
 import type { DictResource } from '@typewords/core/types/types.ts'
 import { useRuntimeStore } from '@typewords/core/stores/runtime.ts'
@@ -8,10 +8,9 @@ import DictList from '@typewords/core/components/list/DictList.vue'
 import DictGroup from '@typewords/core/components/list/DictGroup.vue'
 import { useBaseStore } from '@typewords/core/stores/base.ts'
 import { useRouter } from 'vue-router'
-import { computed, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { getDefaultDict } from '@typewords/core/types/func.ts'
-import { useFetch } from '@vueuse/core'
-import { DICT_LIST, LIB_JS_URL, TourConfig } from '@typewords/core/config/env.ts'
+import { LIB_JS_URL, TourConfig } from '@typewords/core/config/env.ts'
 import { useSettingStore } from '@typewords/core/stores/setting.ts'
 
 const { nav } = useNav()
@@ -43,7 +42,9 @@ function groupByDictTags(dictList: DictResource[]) {
   }, {})
 }
 
-const { data: dict_list, isFetching } = useFetch(resourceWrap(DICT_LIST.WORD.ALL)).json()
+import wordListData from '~/assets/data/list/word.json'
+
+const dict_list = ref(wordListData as DictResource[])
 
 const groupedByCategoryAndTag = $computed(() => {
   let data = []

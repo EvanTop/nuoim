@@ -488,6 +488,7 @@ onUnmounted(() => {
 
 <template>
   <BasePage>
+    <a href="https://nuo.im" class="home-link" title="首页"><img src="/imgs/logo/logo.png" alt="首页" class="home-icon" /><span>首页</span></a>
     <div class="my-30 text-2xl text-red" v-if="isOldHost">
       已启用新域名
       <a class="mr-4" :href="`${Origin}/words?from_old_site=1`">{{ Origin }}</a
@@ -497,7 +498,7 @@ onUnmounted(() => {
     <div class="card flex flex-col md:flex-row gap-4">
       <div class="flex-1 flex flex-col justify-between">
         <div class="flex gap-3">
-          <div class="p-1 center rounded-full bg-white">
+          <div class="p-1 center rounded-full bg-[var(--color-card-bg)]">
             <IconFluentBookNumber20Filled class="text-xl color-link" />
           </div>
           <div @click="goDictDetail(store.sdict)" class="text-2xl font-bold cursor-pointer">
@@ -561,7 +562,7 @@ onUnmounted(() => {
       <div class="flex-1 mt-4 md:mt-0" :class="!store.sdict.id && 'opacity-30 cursor-not-allowed'">
         <div class="flex justify-between">
           <div class="flex items-center gap-2">
-            <div class="p-2 center rounded-full bg-white">
+            <div class="p-2 center rounded-full bg-[var(--color-card-bg)]">
               <IconFluentStar20Filled class="text-lg color-amber" />
             </div>
             <div class="text-xl font-bold">
@@ -841,7 +842,7 @@ onUnmounted(() => {
 <style scoped lang="scss">
 .stat {
   @apply w-49% box-border flex flex-col items-center justify-center rounded-xl p-2 bg-[var(--bg-history)];
-  border: 1px solid gainsboro;
+  border: 1px solid var(--color-item-border);
 
   .num {
     @apply color-[#409eff] text-4xl font-bold;
@@ -860,4 +861,36 @@ onUnmounted(() => {
     @apply text-2xl break-keep;
   }
 }
+
+.home-link {
+  position: fixed;
+  top: 12px;
+  left: 16px;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  text-decoration: none;
+  color: #666;
+  font-size: .85rem;
+  font-weight: 600;
+  opacity: 0.7;
+  transition: opacity 0.15s;
+  border-radius: 9999px;
+  padding: 6px 14px 6px 10px;
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(8px);
+  border: 1.5px solid rgba(0, 0, 0, 0.08);
+}
+.home-link:hover {
+  opacity: 1;
+  color: #1A1A1A;
+  border-color: rgba(0, 0, 0, 0.18);
+}
+.home-link .home-icon {
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+}
+
 </style>

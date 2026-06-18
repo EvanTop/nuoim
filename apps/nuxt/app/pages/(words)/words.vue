@@ -497,6 +497,7 @@ onUnmounted(() => {
 
 <template>
   <BasePage>
+    <a href="https://nuo.im" class="home-link" title="首页"><img src="/imgs/logo/logo.png" alt="首页" class="home-icon" /><span>首页</span></a>
     <div class="my-100 text-4xl font-bold text-red" v-if="isOldHost">
       已启用新域名
       <a class="mr-4" :href="`${Origin}/words?from_old_site=1`">{{ Origin }}</a
@@ -506,7 +507,7 @@ onUnmounted(() => {
     <div class="card flex flex-col md:flex-row gap-4">
       <div class="flex-1 flex flex-col justify-between">
         <div class="flex gap-3">
-          <div class="p-1 center rounded-full bg-white">
+          <div class="p-1 center rounded-full bg-[var(--color-card-bg)]">
             <IconFluentBookNumber20Filled class="text-xl color-link" />
           </div>
           <div @click="goDictDetail(store.sdict)" class="text-2xl font-bold cursor-pointer">
@@ -570,7 +571,7 @@ onUnmounted(() => {
       <div class="flex-1 mt-4 md:mt-0" :class="!store.sdict.id && 'opacity-30 cursor-not-allowed'">
         <div class="flex justify-between">
           <div class="flex items-center gap-2">
-            <div class="p-2 center rounded-full bg-white">
+            <div class="p-2 center rounded-full bg-[var(--color-card-bg)]">
               <IconFluentStar20Filled class="text-lg color-amber" />
             </div>
             <div class="text-xl font-bold">
@@ -582,7 +583,7 @@ onUnmounted(() => {
           </div>
           <div class="flex gap-1 items-center" v-if="store.sdict.id">
             {{ $t('daily_goal') }}
-            <div style="color: #ac6ed1" class="bg-third px-2 h-10 flex center text-2xl rounded">
+            <div style="color: var(--color-select-bg)" class="bg-third px-2 h-10 flex center text-2xl rounded">
               {{ store.sdict.id ? store.sdict.perDayStudyNumber : 0 }}
             </div>
             {{ $t('words_count') }}
@@ -857,26 +858,90 @@ onUnmounted(() => {
 </template>
 
 <style scoped lang="scss">
+/* ── Layout ── */
+.card {
+  background: var(--color-card-bg);
+  border: 1px solid var(--color-item-border);
+  border-radius: 14px;
+  padding: 1.5rem;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+}
+
+/* ── Stat cards ── */
 .stat {
-  @apply w-49% box-border flex flex-col items-center justify-center rounded-xl p-2 bg-[var(--bg-history)];
-  border: 1px solid gainsboro;
-
-  .num {
-    @apply color-[#409eff] text-4xl font-bold;
-  }
-
-  .txt {
-    @apply color-gray-500;
-  }
+  width: 49%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  padding: 1rem 0.5rem;
+  background: var(--bg-history);
+  border: 1px solid var(--color-item-border);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+.stat:hover {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  transform: translateY(-2px);
+}
+.stat .num {
+  color: #409eff;
+  font-size: 2.25rem;
+  font-weight: 700;
+}
+.stat .txt {
+  color: var(--color-font-2);
+  font-size: 0.85rem;
+  margin-top: 0.25rem;
 }
 
 .stat2 {
-  @extend .stat;
-  @apply py-4 flex-1;
+  padding: 1rem;
+  flex: 1;
   width: unset;
+}
+.stat2 .num {
+  font-size: 1.5rem;
+}
 
-  .num {
-    @apply text-2xl break-keep;
-  }
+/* ── Progress section ── */
+.card .flex-1:first-child {
+  padding-right: 1.5rem;
+}
+
+/* ── Home link ── */
+.home-link {
+  position: fixed;
+  top: 12px;
+  left: 16px;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  text-decoration: none;
+  color: var(--color-font-2);
+  font-size: .85rem;
+  font-weight: 600;
+  opacity: 0.75;
+  transition: all 0.2s ease;
+  border-radius: 9999px;
+  padding: 6px 14px 6px 10px;
+  background: var(--color-card-bg);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--color-item-border);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+}
+.home-link:hover {
+  opacity: 1;
+  color: var(--color-main-text);
+  border-color: var(--color-fourth);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+.home-link .home-icon {
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
 }
 </style>

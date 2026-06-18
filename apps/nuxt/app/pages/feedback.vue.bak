@@ -1,0 +1,60 @@
+<script setup lang="ts">
+useSeoMeta({
+  title: 'NUO.IM 反馈群',
+  description: 'NUO.IM 反馈群',
+  ogTitle: 'NUO.IM 反馈群',
+  ogDescription: 'NUO.IM 反馈群',
+})
+</script>
+
+<template>
+      <a href="https://nuo.im" class="home-link" title="首页"><img src="/imgs/logo/logo.png" alt="首页" class="home-icon" /><span>首页</span></a>
+<div class="center">
+    <h1 style="text-align:center;margin-top:40px;">NUO.IM 反馈群</h1>
+    <div style="text-align:center;margin-top:20px;">
+      <img src="/imgs/feedback-group-qr.png" alt="NUO.IM 反馈群二维码" style="max-width:300px;" />
+    </div>
+  </div>
+</template>
+
+<style scoped lang="scss">
+.center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+}
+
+.home-link {
+  position: fixed;
+  top: 12px;
+  left: 16px;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  text-decoration: none;
+  color: #666;
+  font-size: .85rem;
+  font-weight: 600;
+  opacity: 0.7;
+  transition: opacity 0.15s;
+  border-radius: 9999px;
+  padding: 6px 14px 6px 10px;
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(8px);
+  border: 1.5px solid rgba(0, 0, 0, 0.08);
+}
+.home-link:hover {
+  opacity: 1;
+  color: #1A1A1A;
+  border-color: rgba(0, 0, 0, 0.18);
+}
+.home-link .home-icon {
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+}
+
+</style>

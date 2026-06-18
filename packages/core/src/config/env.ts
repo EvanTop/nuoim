@@ -3,11 +3,11 @@ import { offset } from '@floating-ui/dom'
 import { ShortcutKey, WordPracticeMode, WordPracticeStage } from '../types/enum.ts'
 
 export const GITHUB = 'https://github.com/zyronon/TypeWords'
-export const Host = 'typewords.cc'
+export const Host = 'nuo.im'
 export const Old_Host = '2study.top'
 export const EMAIL = 'zyronon@163.com'
 export const Origin = `https://${Host}`
-export const APP_NAME = 'Type Words'
+export const APP_NAME = 'Nuo.im'
 
 const common = {
   word_dict_list_version: 1,
@@ -15,9 +15,9 @@ const common = {
 const map = {
   DEV: {
     // API: 'http://localhost/',
-    API: 'https://api.typewords.cc/',
+    API: 'https://api.nuo.im/',
     // RESOURCE_URL: 'https://dicts.2study.top/',
-    // RESOURCE_URL: '/',
+    // RESOURCE_URL: 'https://files.typewords.cc/',
     RESOURCE_URL: 'https://files.typewords.cc/',
     // RESOURCE_URL: 'http://localhost/static/',
     LIBS_URL: 'https://libs.typewords.cc/',
@@ -50,10 +50,6 @@ export const DICT_LIST = {
   WORD: {
     ALL: ENV.RESOURCE_URL + `/list/word.json`,
     RECOMMENDED: ENV.RESOURCE_URL + `/list/recommend_word.json`,
-  },
-  ARTICLE: {
-    ALL: ENV.RESOURCE_URL + `/list/article.json`,
-    RECOMMENDED: ENV.RESOURCE_URL + `/list/recommend_article.json`,
   },
 }
 
@@ -111,7 +107,6 @@ export const LIB_JS_URL = {
 }
 export const PronunciationApi = 'https://dict.youdao.com/dictvoice?audio='
 export const DefaultShortcutKeyMap = {
-  [ShortcutKey.EditArticle]: 'Ctrl+E',
   [ShortcutKey.ShowWord]: 'Escape',
   [ShortcutKey.Previous]: 'Ctrl+⬅',
   [ShortcutKey.Next]: 'Ctrl+➡',

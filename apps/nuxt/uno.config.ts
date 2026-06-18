@@ -24,7 +24,7 @@ export default defineConfig({
     'py-space': 'py-[var(--space)]',
     'border-item': 'border-[var(--color-item-border)]',
     'border-item-solid': 'border-1 border-solid border-[var(--color-item-border)]',
-    card: 'rounded-xl p-4 mb-8 shadow-lg box-border relative bg-second',
+    card: 'rounded-2xl p-5 mb-6 shadow-sm box-border relative bg-[var(--color-card-bg)] border border-solid border-[var(--color-item-border)]',
     'color-translate-main': 'color-[var(--color-translate-main)]',
     'color-translate-second': 'color-[var(--color-translate-second)]',
     'en-article-family': 'font-[var(--en-article-family)]',
@@ -32,10 +32,9 @@ export default defineConfig({
     'cp': 'cursor-pointer',
   },
   presets: [presetWind3()],
-  // 自定义断点
   theme: {
     breakpoints: {
-      xs: '480px', // 自定义小断点
+      xs: '480px',
       sm: '640px',
       md: '768px',
       lg: '1024px',

@@ -359,7 +359,7 @@ export async function _getDictDataByUrl(val: DictResource, type: DictType = Dict
   // await sleep(2000);
   let dictResourceUrl = ENV.RESOURCE_URL + `dicts/${val.language}/word/${val.url}`
   if (type === DictType.article) {
-    dictResourceUrl = ENV.RESOURCE_URL + `dicts/${val.language}/article/${val.url}`
+    dictResourceUrl = ENV.RESOURCE_URL + `dicts/${val.language}/word/${val.url}`
   }
   let s = await fetch(resourceWrap(dictResourceUrl, val.version)).then(r => r.json())
   if (s) {

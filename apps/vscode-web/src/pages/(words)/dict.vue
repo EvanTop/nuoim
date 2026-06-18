@@ -7,7 +7,6 @@ import { BaseInput } from '@typewords/base'
 import { DeleteIcon } from '@typewords/base'
 import { AppEnv, DictId, LIB_JS_URL, TourConfig } from '@typewords/core/config/env.ts'
 import { getCurrentStudyWord } from '@typewords/core/hooks/dict.ts'
-import EditBook from '@typewords/core/components/article/EditBook.vue'
 import PracticeSettingDialog from '@typewords/core/components/word/PracticeSettingDialog.vue'
 import { useBaseStore } from '@typewords/core/stores/base.ts'
 import { useRuntimeStore } from '@typewords/core/stores/runtime.ts'
@@ -583,6 +582,7 @@ function onSort(type: Sort, pageNo: number, pageSize: number) {
 defineRender(() => {
   return (
     <BasePage>
+      <a href="https://nuo.im" class="home-link" title="首页"><img src="/imgs/logo/logo.png" alt="首页" class="home-icon" /><span>首页</span></a>
       {showBookDetail.value ? (
         <div className="card mb-0 dict-detail-card flex flex-col">
           <div class="dict-header flex justify-between items-center relative">
@@ -773,7 +773,7 @@ defineRender(() => {
             </div>
           </div>
           <div class="center">
-            <EditBook isAdd={isAdd} isBook={false} onClose={formClose} onSubmit={() => (isEdit = isAdd = false)} />
+            <div class="center p-4"><p>Dictionary editing has been moved.</p></div>
           </div>
         </div>
       )}
@@ -790,6 +790,7 @@ defineRender(() => {
 </script>
 
 <style scoped lang="scss">
+/* ── Layout ── */
 .dict-detail-card {
   height: calc(100vh - 3rem);
 }
@@ -811,21 +812,20 @@ defineRender(() => {
 }
 
 .tab-navigation {
-  display: none; // 默认隐藏，移动端显示
+  display: none;
 }
 
 .mobile-hidden {
   display: none;
 }
 
-// 移动端适配
+/* ── Mobile ── */
 @media (max-width: 768px) {
   .dict-detail-card {
     height: unset;
     min-height: calc(100vh - 2rem);
     margin-bottom: 0 !important;
   }
-
   .dict-header {
     width: 100%;
     flex-direction: column;
@@ -834,80 +834,100 @@ defineRender(() => {
     text-align: center;
     gap: 0.75rem;
   }
-
   .dict-header .dict-back {
     align-self: flex-start;
   }
-
   .dict-header .dict-title {
     position: static !important;
     width: 100%;
   }
-
   .dict-header .dict-actions {
     width: 100%;
     justify-content: center;
     gap: 0.75rem;
   }
-
   .tab-navigation {
     display: flex;
     border-bottom: 2px solid var(--color-item-border);
     margin-bottom: 1rem;
     gap: 0;
-
-    .tab-item {
-      flex: 1;
-      padding: 0.75rem 1rem;
-      text-align: center;
-      cursor: pointer;
-      font-size: 0.95rem;
-      font-weight: 500;
-      color: var(--color-sub-text);
-      border-bottom: 2px solid transparent;
-      margin-bottom: -2px;
-      transition: all 0.3s ease;
-      user-select: none;
-
-      &:active {
-        transform: scale(0.98);
-      }
-
-      &.active {
-        color: var(--color-icon-hightlight);
-        border-bottom-color: var(--color-icon-hightlight);
-      }
-    }
   }
-
+  .tab-navigation .tab-item {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    text-align: center;
+    cursor: pointer;
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--color-sub-text);
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px;
+    transition: all 0.3s ease;
+    user-select: none;
+  }
+  .tab-navigation .tab-item:active {
+    transform: scale(0.98);
+  }
+  .tab-navigation .tab-item.active {
+    color: var(--color-select-bg);
+    border-bottom-color: var(--color-select-bg);
+  }
   .content-area {
     flex-direction: column;
-
-    .word-list-section,
-    .edit-section {
-      width: 100% !important;
-      margin-left: 0 !important;
-      max-width: 100%;
-    }
-
-    .edit-section {
-      margin-top: 0;
-    }
+  }
+  .content-area .word-list-section,
+  .content-area .edit-section {
+    width: 100% !important;
+    margin-left: 0 !important;
+    max-width: 100%;
+  }
+  .content-area .edit-section {
+    margin-top: 0;
   }
 }
 
-// 超小屏幕适配
 @media (max-width: 480px) {
   .dict-detail-card {
     height: unset;
     min-height: calc(100vh - 1rem);
   }
-
-  .tab-navigation {
-    .tab-item {
-      padding: 0.6rem 0.5rem;
-      font-size: 0.9rem;
-    }
+  .tab-navigation .tab-item {
+    padding: 0.6rem 0.5rem;
+    font-size: 0.9rem;
   }
+}
+
+/* ── Home link ── */
+:global(.home-link) {
+  position: fixed;
+  top: 12px;
+  left: 16px;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  text-decoration: none;
+  color: var(--color-font-2);
+  font-size: .85rem;
+  font-weight: 600;
+  opacity: 0.75;
+  transition: all 0.2s ease;
+  border-radius: 9999px;
+  padding: 6px 14px 6px 10px;
+  background: var(--color-card-bg);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--color-item-border);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+}
+:global(.home-link):hover {
+  opacity: 1;
+  color: var(--color-main-text);
+  border-color: var(--color-fourth);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+:global(.home-link) .home-icon {
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
 }
 </style>
